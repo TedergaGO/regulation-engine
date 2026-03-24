@@ -1,0 +1,112 @@
+{
+  "standardId": "iso27001",
+  "refNo": "A.5.1",
+  "controlTitle": "Bilgi Güvenliği Politikaları",
+  "currentVersion": "1.0",
+  "lastModifiedBy": "Selami Komutan",
+  "lastModifiedAt": "2026-03-24",
+  "versions": [
+    {
+      "version": "1.0",
+      "createdAt": "2026-03-24",
+      "createdBy": "Selami Komutan",
+      "note": "",
+      "document": {
+        "documentTitle": "Bilgi Güvenliği Politikaları Politikası",
+        "reviewPeriod": "Yıllık",
+        "purpose": "Bu politika, organizasyonun bilgi güvenliği politikaları kapsamındaki kontrol gereksinimlerini karşılamak ve uyum güvencesini sağlamak amacıyla hazırlanmıştır. Bilgi güvenliği politikaları tanımlanmalı, yönetim tarafından onaylanmalı, yayımlanmalı ve tüm personele duyurulmalıdır.",
+        "scope": "Bu politika; kuruluşun tüm çalışanlarını, yüklenicilerini, danışmanlarını ve bilgi varlıklarına erişimi olan üçüncü tarafları kapsar.",
+        "policyStatement": "Kuruluş, bilgi güvenliği politikaları alanında gerekli tüm kontrolleri oluşturmayı, uygulamayı ve sürekliliğini sağlamayı taahhüt eder.\n\nBu politika kapsamındaki tüm faaliyetler ilgili yasal düzenlemeler, sektörel standartlar ve kuruluş içi yönergelere uygun şekilde yürütülmelidir.\n\nPolitika ihlalleri disiplin prosedürlerini ve gerektiğinde yasal süreçleri başlatabilir.",
+        "procedures": [
+          {
+            "stepNo": 1,
+            "title": "Planlama ve Hazırlık",
+            "description": "Gereksinimlerin belirlenmesi, sorumlulukların atanması ve kaynakların tahsis edilmesi.",
+            "responsible": "Bilgi Güvenliği Yöneticisi",
+            "inputs": [
+              "Yönetim direktifi",
+              "Risk değerlendirme raporu"
+            ],
+            "outputs": [
+              "Faaliyet planı"
+            ]
+          },
+          {
+            "stepNo": 2,
+            "title": "Uygulama",
+            "description": "Belirlenen kontrollerin ve prosedürlerin hayata geçirilmesi.",
+            "responsible": "İlgili Departman Yöneticisi",
+            "inputs": [
+              "Faaliyet planı"
+            ],
+            "outputs": [
+              "Uygulama kaydı",
+              "Kanıt dosyası"
+            ]
+          },
+          {
+            "stepNo": 3,
+            "title": "İzleme ve Kontrol",
+            "description": "Uygulamanın etkinliğinin düzenli aralıklarla izlenmesi ve sapmaların tespiti.",
+            "responsible": "Bilgi Güvenliği Yöneticisi",
+            "inputs": [
+              "Uygulama kaydı"
+            ],
+            "outputs": [
+              "İzleme raporu"
+            ]
+          },
+          {
+            "stepNo": 4,
+            "title": "Gözden Geçirme ve İyileştirme",
+            "description": "Politika ve prosedürlerin yıllık olarak gözden geçirilmesi; iyileştirme fırsatlarının değerlendirilmesi.",
+            "responsible": "Üst Yönetim / BGYS Komitesi",
+            "inputs": [
+              "İzleme raporu",
+              "Denetim bulguları"
+            ],
+            "outputs": [
+              "Güncellenmiş politika"
+            ]
+          }
+        ],
+        "responsibilities": [
+          {
+            "role": "Üst Yönetim",
+            "duties": "Politikayı onaylamak, gerekli kaynakları sağlamak ve uyum kültürünü desteklemek."
+          },
+          {
+            "role": "Bilgi Güvenliği Yöneticisi",
+            "duties": "Politikanın uygulanmasını koordine etmek, izlemek ve raporlamak."
+          },
+          {
+            "role": "Departman Yöneticileri",
+            "duties": "Kendi birimlerinde politikaya uyumu sağlamak ve personeli yönlendirmek."
+          },
+          {
+            "role": "Tüm Çalışanlar",
+            "duties": "Politika hükümlerine uymak; ihlal ve zafiyetleri derhal bildirmek."
+          },
+          {
+            "role": "İç Denetim",
+            "duties": "Uyumu bağımsız olarak denetlemek ve bulgularını raporlamak."
+          }
+        ],
+        "measurementCriteria": [
+          "Politika gözden geçirme tamamlanma oranı: %100 (yıllık)",
+          "Tespit edilen politika ihlal sayısı: Hedef 0",
+          "Farkındalık eğitimi tamamlama oranı: ≥ %90",
+          "Açık bulgu kapatma süresi: ≤ 30 gün"
+        ],
+        "relatedDocuments": [
+          "Bilgi Güvenliği Ana Politikası",
+          "Organizasyonel Kontroller Prosedürleri",
+          "Risk Değerlendirme Çerçevesi",
+          "İç Denetim Planı"
+        ],
+        "exceptions": "İstisna talepleri yazılı olarak Bilgi Güvenliği Yöneticisine iletilmeli, gerekçelendirilmeli ve Üst Yönetim tarafından onaylanmalıdır. Onaylanan istisnalar kayıt altına alınır ve periyodik olarak gözden geçirilir.",
+        "compliance": "Bu politikaya uymayan personel hakkında İnsan Kaynakları politikaları çerçevesinde disiplin süreci başlatılır. Kasıtlı veya tekrarlayan ihlaller iş akdi feshine ve yasal işleme yol açabilir."
+      }
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "finans",
+    "name": "Finans & Bankacılık",
+    "icon": "🏦",
+    "color": "#1A5276",
+    "description": "Bankalar, katılım bankaları, ödeme kuruluşları ve fintech şirketleri için zorunlu ve tavsiye edilen regülasyonlar",
+    "primaryStandards": ["bddk", "tcmb_teblig", "spk", "dora"],
+    "supportingStandards": ["iso27001", "pcidss", "soc2", "iso22301", "cis_controls", "nist_csf"]
+  },
+  {
+    "id": "saglik",
+    "name": "Sağlık",
+    "icon": "🏥",
+    "color": "#1E8449",
+    "description": "Hastaneler, klinikler, sağlık yazılım sağlayıcıları ve e-sağlık platformları için kişisel sağlık verisi ve hizmet sürekliliği regülasyonları",
+    "primaryStandards": ["kvkk", "gdpr"],
+    "supportingStandards": ["iso27001", "iso22301", "soc2", "cis_controls", "owasp"]
+  },
+  {
+    "id": "sigorta",
+    "name": "Sigortacılık",
+    "icon": "🛡️",
+    "color": "#784212",
+    "description": "Sigorta şirketleri ve acenteleri için dijital dayanıklılık, veri koruma ve uyum gereksinimleri",
+    "primaryStandards": ["spk", "dora", "kvkk"],
+    "supportingStandards": ["iso27001", "soc2", "iso22301", "nist_csf", "cis_controls"]
+  },
+  {
+    "id": "kamu",
+    "name": "Kamu & E-Devlet",
+    "icon": "🏛️",
+    "color": "#6C3483",
+    "description": "Kamu kurumları, belediyeler ve e-devlet hizmet sağlayıcıları için siber güvenlik ve veri koruma gereksinimleri",
+    "primaryStandards": ["ddo_siber", "kvkk"],
+    "supportingStandards": ["iso27001", "cobit", "btk", "nist_csf", "cis_controls", "iso22301"]
+  },
+  {
+    "id": "teknoloji",
+    "name": "Teknoloji & Yazılım",
+    "icon": "💻",
+    "color": "#0E6655",
+    "description": "Yazılım geliştiren, SaaS/cloud hizmet sağlayan ve teknoloji ürünleri satan şirketler için uygulama güvenliği ve uyum standartları",
+    "primaryStandards": ["owasp", "soc2", "iso27001"],
+    "supportingStandards": ["cis_controls", "nist_csf", "nist_sp80061", "iso27035", "pcidss"]
+  },
+  {
+    "id": "telekomunikasyon",
+    "name": "Telekomünikasyon",
+    "icon": "📡",
+    "color": "#117A65",
+    "description": "Elektronik haberleşme operatörleri, internet servis sağlayıcıları ve altyapı şirketleri için sektörel düzenleme ve siber güvenlik",
+    "primaryStandards": ["btk", "nis2"],
+    "supportingStandards": ["iso27001", "enisa", "iso22301", "cis_controls", "nist_csf", "iso27035"]
+  },
+  {
+    "id": "enerji",
+    "name": "Enerji & Kritik Altyapı",
+    "icon": "⚡",
+    "color": "#D4AC0D",
+    "description": "Enerji üretim ve dağıtım, su, ulaşım ve kritik altyapı işletmecileri için OT/IT güvenliği ve dayanıklılık gereksinimleri",
+    "primaryStandards": ["nis2", "enisa"],
+    "supportingStandards": ["iso27001", "iso22301", "nist_csf", "cis_controls", "nist_sp80061"]
+  },
+  {
+    "id": "ab-uyum",
+    "name": "AB Uyumu",
+    "icon": "🇪🇺",
+    "color": "#003399",
+    "description": "Avrupa Birliği pazarında faaliyet gösteren veya AB vatandaşlarına hizmet sunan kuruluşlar için zorunlu AB regülasyonları",
+    "primaryStandards": ["gdpr", "nis2", "dora"],
+    "supportingStandards": ["enisa", "iso27001", "iso27035"]
+  },
+  {
+    "id": "genel-it",
+    "name": "Genel BT Uyum",
+    "icon": "🔧",
+    "color": "#555555",
+    "description": "Sektörden bağımsız olarak tüm BT kuruluşlarının temel uyum noktaları — en iyi pratikler ve evrensel standartlar",
+    "primaryStandards": ["iso27001", "nist_csf", "cis_controls"],
+    "supportingStandards": ["cobit", "itil", "isaca", "iso22301", "soc2", "iso20000"]
+  }
+]

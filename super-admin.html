@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Süper Admin Paneli</title>
+<style>
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --surface2: #1f2937;
+  --surface3: #252d3a;
+  --border:   #30363d;
+  --text1:    #e6edf3;
+  --text2:    #8b949e;
+  --text3:    #484f58;
+  --blue:     #58a6ff;
+  --blue2:    #1f6feb;
+  --green:    #3fb950;
+  --red:      #f85149;
+  --orange:   #d29922;
+  --purple:   #bc8cff;
+  --radius:   8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text1); font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; min-height:100vh; }
+
+/* ── Login ── */
+#login-screen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; background: var(--bg);
+}
+.login-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 40px; width: 360px; text-align: center;
+}
+.login-card h2 { font-size: 20px; margin-bottom: 6px; }
+.login-card p  { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+.form-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 12px; color: var(--text1); font-size: 14px;
+  margin-bottom: 10px; outline: none;
+}
+.form-input:focus { border-color: var(--blue); }
+.btn { border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity .15s; }
+.btn:hover { opacity: .85; }
+.btn-primary  { background: var(--blue2); color: #fff; }
+.btn-success  { background: #1a7f37; color: #fff; }
+.btn-danger   { background: #b91c1c; color: #fff; }
+.btn-ghost    { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-full { width: 100%; padding: 10px; }
+.error-msg { color: var(--red); font-size: 13px; margin-top: 10px; }
+
+/* ── App Shell ── */
+#app-shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; padding: 0;
+}
+.sidebar-logo {
+  padding: 20px 16px 16px; border-bottom: 1px solid var(--border);
+  font-weight: 700; font-size: 15px; color: var(--text1);
+}
+.sidebar-logo span { color: var(--blue); margin-right: 6px; }
+.sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  border-radius: 6px; cursor: pointer; color: var(--text2); font-size: 13px;
+  border: none; background: transparent; width: 100%; text-align: left;
+  transition: background .15s, color .15s;
+}
+.nav-item:hover  { background: var(--surface2); color: var(--text1); }
+.nav-item.active { background: var(--surface2); color: var(--blue); font-weight: 600; }
+.nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-footer {
+  padding: 12px; border-top: 1px solid var(--border);
+}
+.sidebar-user { font-size: 12px; color: var(--text2); margin-bottom: 8px; line-height: 1.5; }
+.sidebar-user strong { color: var(--text1); display: block; }
+.sa-badge { display: inline-block; background: #1e3a5f; color: var(--blue); border: 1px solid var(--blue2); border-radius: 4px; padding: 1px 6px; font-size: 10px; font-weight: 700; }
+.sidebar-links { display: flex; gap: 8px; margin-top: 8px; }
+.sidebar-links a { color: var(--text2); font-size: 12px; text-decoration: none; }
+.sidebar-links a:hover { color: var(--blue); }
+
+/* ── Main Content ── */
+#main { flex: 1; overflow-y: auto; background: var(--bg); }
+.page { display: none; padding: 28px 32px; }
+.page.active { display: block; }
+.page-header { margin-bottom: 24px; }
+.page-header h1 { font-size: 22px; font-weight: 700; }
+.page-header p { color: var(--text2); font-size: 13px; margin-top: 4px; }
+
+/* ── Stats ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; text-align: center;
+}
+.stat-value { font-size: 32px; font-weight: 700; color: var(--text1); }
+.stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.stat-icon  { font-size: 22px; margin-bottom: 8px; }
+
+/* ── Cards / Tables ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-header h2 { font-size: 15px; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600;
+  color: var(--text2); text-transform: uppercase; letter-spacing: .5px;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
+.empty-row td { text-align: center; color: var(--text2); padding: 32px; }
+
+/* ── Badges ── */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.badge-green  { background: #0d2b1d; color: var(--green); border: 1px solid #1a4731; }
+.badge-red    { background: #2d1519; color: var(--red);   border: 1px solid #6b2526; }
+.badge-blue   { background: #0c1d3a; color: var(--blue);  border: 1px solid var(--blue2); }
+.badge-orange { background: #2b1e07; color: var(--orange); border: 1px solid #5c3d0d; }
+.badge-purple { background: #1e1040; color: var(--purple); border: 1px solid #4b2d80; }
+.plan-badge { font-size: 10px; padding: 2px 7px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
+.plan-starter     { background: var(--surface3); color: var(--text2); }
+.plan-professional{ background: #0c1d3a; color: var(--blue); }
+.plan-enterprise  { background: #1e1040; color: var(--purple); }
+
+/* ── Action row ── */
+.actions { display: flex; gap: 6px; align-items: center; }
+
+/* ── Modals ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  z-index: 1000; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  width: 480px; max-width: 96vw; max-height: 90vh; overflow-y: auto;
+  padding: 24px;
+}
+.modal-title {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+.modal-title h3 { font-size: 16px; font-weight: 600; }
+.modal-close { background: transparent; border: none; color: var(--text2); cursor: pointer; font-size: 18px; padding: 2px; }
+.modal-close:hover { color: var(--text1); }
+.form-row { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; }
+.form-select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 9px 12px; color: var(--text1); font-size: 14px; outline: none;
+}
+.form-select:focus { border-color: var(--blue); }
+.form-hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.modal-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.checkbox-row input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--blue); }
+
+/* ── Toast ── */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 8px; font-size: 13px; min-width: 240px; animation: slideIn .25s ease; }
+.toast-success { background: #0d2b1d; border: 1px solid #1a4731; color: var(--green); }
+.toast-error   { background: #2d1519; border: 1px solid #6b2526; color: var(--red); }
+.toast-info    { background: #0c1d3a; border: 1px solid var(--blue2); color: var(--blue); }
+@keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ── Tenant detail panel ── */
+.detail-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  margin-top: 20px; overflow: hidden;
+}
+.detail-panel-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface2);
+}
+.detail-panel-header h3 { font-size: 14px; font-weight: 600; }
+
+/* ── Filter bar ── */
+.filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-bar .form-input { margin: 0; width: auto; flex: 1; min-width: 180px; }
+.filter-bar .form-select { margin: 0; width: auto; }
+
+/* ── Spinner ── */
+.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div style="font-size:32px;margin-bottom:12px">⚖️</div>
+    <h2>Süper Admin Paneli</h2>
+    <p>Platform yönetimi için giriş yapın</p>
+    <input id="sa-username" class="form-input" placeholder="Kullanıcı adı" autocomplete="username"/>
+    <input id="sa-password" class="form-input" type="password" placeholder="Şifre" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter') doSALogin()"/>
+    <button class="btn btn-primary btn-full" onclick="doSALogin()">Giriş Yap</button>
+    <div id="sa-login-error" class="error-msg" style="display:none"></div>
+    <div style="margin-top:16px">
+      <a href="/regulation-engine" style="color:var(--text2);font-size:12px;text-decoration:none">← Regülasyon Motoruna Dön</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP SHELL ══════════════ -->
+<div id="app-shell" style="display:none">
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-logo"><span>⚖️</span> Süper Admin</div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" id="nav-dashboard" onclick="showSAPage('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" id="nav-tenants" onclick="showSAPage('tenants')">
+        <span class="nav-icon">🏢</span> Tenantlar
+      </button>
+      <button class="nav-item" id="nav-users" onclick="showSAPage('users')">
+        <span class="nav-icon">👥</span> Tüm Kullanıcılar
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <strong id="sa-user-name">—</strong>
+        <span class="sa-badge">SÜPER ADMIN</span>
+      </div>
+      <div class="sidebar-links">
+        <a href="/regulation-engine">← RE</a>
+        <span style="color:var(--border)">|</span>
+        <a href="#" onclick="doSALogout()">Çıkış</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main id="main">
+
+    <!-- ── Dashboard Page ── -->
+    <div id="sa-page-dashboard" class="page active">
+      <div class="page-header">
+        <h1>📊 Dashboard</h1>
+        <p>Platform genel durumu</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🏢</div>
+          <div class="stat-value" id="stat-tenants">—</div>
+          <div class="stat-label">Toplam Tenant</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="stat-users">—</div>
+          <div class="stat-label">Aktif Kullanıcı</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="stat-standards">—</div>
+          <div class="stat-label">Toplam Standart</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📄</div>
+          <div class="stat-value" id="stat-policies">—</div>
+          <div class="stat-label">Toplam Politika</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Tenant Özeti</h2>
+          <button class="btn btn-success btn-sm" onclick="showSAPage('tenants');openTenantModal()">+ Yeni Tenant</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Tenant</th><th>Plan</th><th>Kullanıcı</th><th>Standart</th><th>Politika</th><th>Durum</th>
+          </tr></thead>
+          <tbody id="dash-tenants-tbody"><tr class="empty-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Tenants Page ── -->
+    <div id="sa-page-tenants" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h1>🏢 Tenantlar</h1>
+          <p>Tüm organizasyonları yönetin</p>
+        </div>
+        <button class="btn btn-success" onclick="openTenantModal()">+ Yeni Tenant</button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Tenant Listesi</h2>
+          <input class="form-input" id="tenant-search" placeholder="🔍 Tenant ara…" style="width:220px;margin:0"
+                 oninput="filterTenants()"/>
+        </div>
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Tenant Adı</th><th>Slug</th><th>Plan</th>
+            <th>Kullanıcı</th><th>Standart</th><th>Durum</th><th>İşlem</th>
+          </tr></thead>
+          <tbody id="tenants-tbody"><tr class="empty-row"><td colspan="8"><span class="spinner"></span></td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- Tenant Detail Panel -->
+      <div id="tenant-detail-panel" class="detail-panel" style="display:none">
+        <div class="detail-panel-header">
+          <h3 id="detail-tenant-title">Tenant Kullanıcıları</h3>
+          <div class="actions">
+            <button class="btn btn-success btn-sm" onclick="openUserModal()">+ Kullanıcı Ekle</button>
+            <button class="btn btn-ghost btn-sm" onclick="closeTenantDetail()">✕ Kapat</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Kullanıcı</th><th>Ad Soyad</th><th>E-posta</th><th>Rol</th><th>Süper Admin</th><th>Durum</th><th>İşlem</th>
+          </tr></thead>
+          <tbody id="detail-users-tbody"><tr class="empty-row"><td colspan="7">Yükleniyor…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Users Page ── -->
+    <div id="sa-page-users" class="page">
+      <div class="page-header">
+        <h1>👥 Tüm Kullanıcılar</h1>
+        <p>Platform genelinde tüm kullanıcılar</p>
+      </div>
+      <div class="filter-bar">
+        <input class="form-input" id="user-search" placeholder="🔍 Kullanıcı ara…" oninput="filterUsers()"/>
+        <select class="form-select" id="user-tenant-filter" onchange="filterUsers()" style="width:180px">
+          <option value="">Tüm Tenantlar</option>
+        </select>
+        <select class="form-select" id="user-role-filter" onchange="filterUsers()" style="width:140px">
+          <option value="">Tüm Roller</option>
+          <option value="admin">Admin</option>
+          <option value="editor">Editör</option>
+          <option value="viewer">Görüntüleyici</option>
+        </select>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr>
+            <th>Kullanıcı Adı</th><th>Ad Soyad</th><th>Tenant</th><th>Rol</th><th>Süper Admin</th><th>Durum</th><th>İşlem</th>
+          </tr></thead>
+          <tbody id="users-tbody"><tr class="empty-row"><td colspan="7"><span class="spinner"></span></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════ TENANT MODAL ══════════════ -->
+<div id="tenant-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">
+      <h3 id="tenant-modal-title">Yeni Tenant Oluştur</h3>
+      <button class="modal-close" onclick="closeTenantModal()">✕</button>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Tenant Adı *</label>
+      <input id="tm-name" class="form-input" placeholder="Örn: Acme Şirketi" style="margin:0"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Slug *</label>
+      <input id="tm-slug" class="form-input" placeholder="Örn: acme (otomatik doldurulur)" style="margin:0"/>
+      <div class="form-hint">Küçük harf, tire kullanılabilir. Değiştirilemez.</div>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="form-label">Plan</label>
+        <select id="tm-plan" class="form-select">
+          <option value="starter">Starter</option>
+          <option value="professional">Professional</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Maks. Kullanıcı</label>
+        <input id="tm-maxusers" class="form-input" type="number" value="10" style="margin:0"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">İletişim E-postası</label>
+      <input id="tm-email" class="form-input" placeholder="admin@firma.com" style="margin:0"/>
+    </div>
+    <hr class="modal-divider"/>
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text2)">İlk Admin Kullanıcı (Opsiyonel)</div>
+    <div class="form-row">
+      <label class="form-label">Kullanıcı Adı</label>
+      <input id="tm-admin-user" class="form-input" placeholder="Örn: admin" style="margin:0"/>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="form-label">Ad Soyad</label>
+        <input id="tm-admin-name" class="form-input" placeholder="Yönetici Adı" style="margin:0"/>
+      </div>
+      <div>
+        <label class="form-label">Şifre</label>
+        <input id="tm-admin-pass" class="form-input" type="password" placeholder="Şifre" style="margin:0"/>
+      </div>
+    </div>
+    <div id="tm-error" class="error-msg" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeTenantModal()">İptal</button>
+      <button class="btn btn-success" onclick="saveTenant()" id="tm-save-btn">Oluştur</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ EDIT TENANT MODAL ══════════════ -->
+<div id="edit-tenant-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">
+      <h3>Tenant Düzenle</h3>
+      <button class="modal-close" onclick="closeEditTenantModal()">✕</button>
+    </div>
+    <input type="hidden" id="etm-id"/>
+    <div class="form-row">
+      <label class="form-label">Tenant Adı</label>
+      <input id="etm-name" class="form-input" style="margin:0"/>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="form-label">Plan</label>
+        <select id="etm-plan" class="form-select">
+          <option value="starter">Starter</option>
+          <option value="professional">Professional</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Maks. Kullanıcı</label>
+        <input id="etm-maxusers" class="form-input" type="number" style="margin:0"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">İletişim E-postası</label>
+      <input id="etm-email" class="form-input" style="margin:0"/>
+    </div>
+    <div id="etm-error" class="error-msg" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeEditTenantModal()">İptal</button>
+      <button class="btn btn-primary" onclick="updateTenant()">Güncelle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ USER MODAL ══════════════ -->
+<div id="user-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">
+      <h3 id="user-modal-title">Kullanıcı Ekle</h3>
+      <button class="modal-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <input type="hidden" id="um-id"/>
+    <input type="hidden" id="um-tenant-id"/>
+    <div class="form-row">
+      <label class="form-label">Kullanıcı Adı *</label>
+      <input id="um-username" class="form-input" placeholder="orn: ayse.yilmaz" style="margin:0"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Ad Soyad *</label>
+      <input id="um-fullname" class="form-input" placeholder="Ayşe Yılmaz" style="margin:0"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">E-posta</label>
+      <input id="um-email" class="form-input" placeholder="ayse@firma.com" type="email" style="margin:0"/>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="form-label">Rol</label>
+        <select id="um-role" class="form-select">
+          <option value="viewer">Görüntüleyici</option>
+          <option value="editor">Editör</option>
+          <option value="admin">Yönetici</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Şifre *</label>
+        <input id="um-password" class="form-input" type="password" placeholder="En az 6 karakter" style="margin:0"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="checkbox-row">
+        <input type="checkbox" id="um-is-super-admin"/>
+        <span>Süper Admin yetkisi ver</span>
+      </label>
+      <div class="form-hint" style="margin-top:4px">⚠️ Süper admin tüm tenantlara erişebilir.</div>
+    </div>
+    <div id="um-error" class="error-msg" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeUserModal()">İptal</button>
+      <button class="btn btn-success" onclick="saveUser()" id="um-save-btn">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ EDIT USER MODAL ══════════════ -->
+<div id="edit-user-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">
+      <h3>Kullanıcı Düzenle</h3>
+      <button class="modal-close" onclick="closeEditUserModal()">✕</button>
+    </div>
+    <input type="hidden" id="eum-id"/>
+    <div class="form-row">
+      <label class="form-label">Ad Soyad</label>
+      <input id="eum-fullname" class="form-input" style="margin:0"/>
+    </div>
+    <div class="form-row">
+      <label class="form-label">E-posta</label>
+      <input id="eum-email" class="form-input" type="email" style="margin:0"/>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="form-label">Rol</label>
+        <select id="eum-role" class="form-select">
+          <option value="viewer">Görüntüleyici</option>
+          <option value="editor">Editör</option>
+          <option value="admin">Yönetici</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Yeni Şifre (opsiyonel)</label>
+        <input id="eum-password" class="form-input" type="password" placeholder="Değiştirmek için girin" style="margin:0"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="checkbox-row">
+        <input type="checkbox" id="eum-is-super-admin"/>
+        <span>Süper Admin yetkisi</span>
+      </label>
+    </div>
+    <div id="eum-error" class="error-msg" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeEditUserModal()">İptal</button>
+      <button class="btn btn-primary" onclick="updateUser()">Güncelle</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let saUser = null;
+let allTenants = [];
+let allUsersData = [];
+let currentDetailTenantId = null;
+
+// ── API ──────────────────────────────────────────────────────────────────────
+function getToken() { return localStorage.getItem('reg_token'); }
+
+async function saFetch(url, options = {}) {
+  const token = getToken();
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const r = await fetch(url, { ...options, headers });
+  if (r.status === 401) { doSALogout(); throw new Error('Oturum süresi doldu'); }
+  return r;
+}
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+async function checkSAAuth() {
+  const token = getToken();
+  if (!token) { showLogin(); return; }
+  try {
+    const r = await fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!r.ok) { showLogin(); return; }
+    const user = await r.json();
+    if (!user.isSuperAdmin) {
+      showLogin('Bu sayfaya erişim için Süper Admin yetkisi gereklidir.');
+      return;
+    }
+    saUser = user;
+    showApp();
+    loadDashboard();
+    loadTenantsData();
+    loadAllUsersData();
+  } catch(e) { showLogin(); }
+}
+
+function showLogin(msg) {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-shell').style.display = 'none';
+  if (msg) {
+    const el = document.getElementById('sa-login-error');
+    el.textContent = msg; el.style.display = 'block';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'flex';
+  document.getElementById('sa-user-name').textContent = saUser.fullName || saUser.username;
+}
+
+async function doSALogin() {
+  const username = document.getElementById('sa-username').value.trim();
+  const password = document.getElementById('sa-password').value;
+  const errEl = document.getElementById('sa-login-error');
+  errEl.style.display = 'none';
+  if (!username || !password) { errEl.textContent = 'Kullanıcı adı ve şifre gerekli'; errEl.style.display = 'block'; return; }
+
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Giriş başarısız'; errEl.style.display = 'block'; return; }
+    if (!data.user?.isSuperAdmin) {
+      errEl.textContent = 'Süper Admin yetkisi bulunmuyor.'; errEl.style.display = 'block'; return;
+    }
+    localStorage.setItem('reg_token', data.token);
+    saUser = data.user;
+    showApp();
+    loadDashboard();
+    loadTenantsData();
+    loadAllUsersData();
+  } catch(e) { errEl.textContent = 'Sunucuya bağlanılamadı'; errEl.style.display = 'block'; }
+}
+
+function doSALogout() {
+  localStorage.removeItem('reg_token');
+  saUser = null; allTenants = []; allUsersData = [];
+  showLogin();
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showSAPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('sa-page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const r = await saFetch('/api/super-admin/stats');
+    if (!r.ok) return;
+    const data = await r.json();
+    document.getElementById('stat-tenants').textContent   = data.tenantCount;
+    document.getElementById('stat-users').textContent     = data.userCount;
+    document.getElementById('stat-standards').textContent = data.standardCount;
+    document.getElementById('stat-policies').textContent  = data.policyCount;
+  } catch(e) {}
+}
+
+// ── Tenants ───────────────────────────────────────────────────────────────────
+async function loadTenantsData() {
+  try {
+    const r = await saFetch('/api/super-admin/tenants');
+    if (!r.ok) return;
+    allTenants = await r.json();
+    renderTenants(allTenants);
+    renderDashTenants(allTenants);
+    populateTenantFilter();
+  } catch(e) { toast('Tenantlar yüklenemedi', 'error'); }
+}
+
+function renderTenants(list) {
+  const tbody = document.getElementById('tenants-tbody');
+  if (!list.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Tenant bulunamadı</td></tr>'; return; }
+  tbody.innerHTML = list.map(t => `
+    <tr>
+      <td style="color:var(--text3);font-size:12px">#${t.id}</td>
+      <td style="font-weight:600">${escHtml(t.name)}</td>
+      <td><code style="font-size:11px;color:var(--text2)">${escHtml(t.slug)}</code></td>
+      <td><span class="plan-badge plan-${t.plan}">${t.plan}</span></td>
+      <td style="color:var(--text2)">${t.userCount} / ${t.maxUsers}</td>
+      <td style="color:var(--text2)">${t.standardCount}</td>
+      <td><span class="badge ${t.isActive ? 'badge-green' : 'badge-red'}">${t.isActive ? '● Aktif' : '○ Pasif'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-ghost btn-sm" onclick="viewTenantUsers(${t.id},'${escHtml(t.name)}')">👥</button>
+          <button class="btn btn-ghost btn-sm" onclick="openEditTenantModal(${t.id})">✏️</button>
+          <button class="btn btn-${t.isActive ? 'danger' : 'success'} btn-sm" onclick="toggleTenant(${t.id})">${t.isActive ? 'Durdur' : 'Aktifleştir'}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderDashTenants(list) {
+  const tbody = document.getElementById('dash-tenants-tbody');
+  tbody.innerHTML = list.slice(0,8).map(t => `
+    <tr>
+      <td style="font-weight:600">${escHtml(t.name)}</td>
+      <td><span class="plan-badge plan-${t.plan}">${t.plan}</span></td>
+      <td style="color:var(--text2)">${t.userCount}</td>
+      <td style="color:var(--text2)">${t.standardCount}</td>
+      <td style="color:var(--text2)">${t.policyCount}</td>
+      <td><span class="badge ${t.isActive ? 'badge-green' : 'badge-red'}">${t.isActive ? 'Aktif' : 'Pasif'}</span></td>
+    </tr>`).join('');
+}
+
+function filterTenants() {
+  const q = (document.getElementById('tenant-search').value || '').toLowerCase();
+  const filtered = allTenants.filter(t =>
+    t.name.toLowerCase().includes(q) || t.slug.toLowerCase().includes(q)
+  );
+  renderTenants(filtered);
+}
+
+// ── Tenant CRUD ───────────────────────────────────────────────────────────────
+function openTenantModal() {
+  document.getElementById('tm-name').value = '';
+  document.getElementById('tm-slug').value = '';
+  document.getElementById('tm-plan').value = 'starter';
+  document.getElementById('tm-maxusers').value = '10';
+  document.getElementById('tm-email').value = '';
+  document.getElementById('tm-admin-user').value = '';
+  document.getElementById('tm-admin-name').value = '';
+  document.getElementById('tm-admin-pass').value = '';
+  document.getElementById('tm-error').style.display = 'none';
+  document.getElementById('tenant-modal').classList.add('open');
+
+  document.getElementById('tm-name').oninput = function() {
+    const slug = this.value.toLowerCase()
+      .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s')
+      .replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
+      .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    document.getElementById('tm-slug').value = slug;
+  };
+}
+function closeTenantModal() { document.getElementById('tenant-modal').classList.remove('open'); }
+
+async function saveTenant() {
+  const name        = document.getElementById('tm-name').value.trim();
+  const slug        = document.getElementById('tm-slug').value.trim();
+  const plan        = document.getElementById('tm-plan').value;
+  const maxUsers    = parseInt(document.getElementById('tm-maxusers').value) || 10;
+  const contactEmail= document.getElementById('tm-email').value.trim();
+  const adminUsername= document.getElementById('tm-admin-user').value.trim();
+  const adminPassword= document.getElementById('tm-admin-pass').value;
+  const adminFullName= document.getElementById('tm-admin-name').value.trim();
+  const errEl = document.getElementById('tm-error');
+  errEl.style.display = 'none';
+
+  if (!name || !slug) { errEl.textContent = 'Tenant adı ve slug zorunludur'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('tm-save-btn');
+  btn.disabled = true; btn.textContent = 'Oluşturuluyor…';
+  try {
+    const r = await saFetch('/api/super-admin/tenants', {
+      method: 'POST',
+      body: JSON.stringify({ name, slug, plan, maxUsers, contactEmail, adminUsername, adminPassword, adminFullName })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Hata'; errEl.style.display = 'block'; return; }
+    toast(`"${name}" tenantı oluşturuldu`, 'success');
+    closeTenantModal();
+    loadTenantsData();
+    loadDashboard();
+  } catch(e) { errEl.textContent = 'Sunucu hatası'; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Oluştur'; }
+}
+
+function openEditTenantModal(id) {
+  const t = allTenants.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('etm-id').value     = t.id;
+  document.getElementById('etm-name').value   = t.name;
+  document.getElementById('etm-plan').value   = t.plan;
+  document.getElementById('etm-maxusers').value = t.maxUsers;
+  document.getElementById('etm-email').value  = t.contactEmail || '';
+  document.getElementById('etm-error').style.display = 'none';
+  document.getElementById('edit-tenant-modal').classList.add('open');
+}
+function closeEditTenantModal() { document.getElementById('edit-tenant-modal').classList.remove('open'); }
+
+async function updateTenant() {
+  const id         = parseInt(document.getElementById('etm-id').value);
+  const name       = document.getElementById('etm-name').value.trim();
+  const plan       = document.getElementById('etm-plan').value;
+  const maxUsers   = parseInt(document.getElementById('etm-maxusers').value) || 10;
+  const contactEmail= document.getElementById('etm-email').value.trim();
+  const errEl = document.getElementById('etm-error');
+  errEl.style.display = 'none';
+
+  try {
+    const r = await saFetch(`/api/super-admin/tenants/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name, plan, maxUsers, contactEmail })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Hata'; errEl.style.display = 'block'; return; }
+    toast('Tenant güncellendi', 'success');
+    closeEditTenantModal();
+    loadTenantsData();
+  } catch(e) { errEl.textContent = 'Sunucu hatası'; errEl.style.display = 'block'; }
+}
+
+async function toggleTenant(id) {
+  const t = allTenants.find(x => x.id === id);
+  const action = t?.isActive ? 'durdurmak' : 'aktifleştirmek';
+  if (!confirm(`"${t?.name}" tenantını ${action} istediğinizden emin misiniz?`)) return;
+  try {
+    const r = await saFetch(`/api/super-admin/tenants/${id}/status`, { method: 'PATCH', body: '{}' });
+    const data = await r.json();
+    if (!r.ok) { toast(data.error || 'Hata', 'error'); return; }
+    toast(`Tenant ${data.isActive ? 'aktifleştirildi' : 'durduruldu'}`, 'success');
+    loadTenantsData();
+  } catch(e) { toast('Sunucu hatası', 'error'); }
+}
+
+// ── Tenant Users Detail ────────────────────────────────────────────────────────
+async function viewTenantUsers(tenantId, tenantName) {
+  currentDetailTenantId = tenantId;
+  document.getElementById('detail-tenant-title').textContent = `👥 ${tenantName} — Kullanıcılar`;
+  document.getElementById('tenant-detail-panel').style.display = 'block';
+  document.getElementById('detail-users-tbody').innerHTML = '<tr class="empty-row"><td colspan="7"><span class="spinner"></span></td></tr>';
+  document.getElementById('tenant-detail-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  try {
+    const r = await saFetch(`/api/super-admin/tenants/${tenantId}/users`);
+    const users = await r.json();
+    renderDetailUsers(users);
+  } catch(e) { toast('Kullanıcılar yüklenemedi', 'error'); }
+}
+
+function renderDetailUsers(users) {
+  const tbody = document.getElementById('detail-users-tbody');
+  if (!users.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Kullanıcı bulunamadı</td></tr>'; return; }
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td style="font-weight:600">${escHtml(u.username)}</td>
+      <td>${escHtml(u.fullName)}</td>
+      <td style="color:var(--text2)">${escHtml(u.email || '—')}</td>
+      <td>${roleBadge(u.role)}</td>
+      <td>${u.isSuperAdmin ? '<span class="badge badge-purple">⚡ SA</span>' : '<span style="color:var(--text3)">—</span>'}</td>
+      <td><span class="badge ${u.isActive ? 'badge-green' : 'badge-red'}">${u.isActive ? '● Aktif' : '○ Pasif'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEditUserModalData(${JSON.stringify(u).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="btn btn-${u.isActive ? 'danger' : 'success'} btn-sm" onclick="toggleUserStatus(${u.id},'detail')">${u.isActive ? 'Durdur' : 'Aktif'}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function closeTenantDetail() {
+  document.getElementById('tenant-detail-panel').style.display = 'none';
+  currentDetailTenantId = null;
+}
+
+// ── User Modal (Add) ──────────────────────────────────────────────────────────
+function openUserModal(tenantId) {
+  const tid = tenantId || currentDetailTenantId;
+  document.getElementById('um-id').value = '';
+  document.getElementById('um-tenant-id').value = tid || '';
+  document.getElementById('um-username').value = '';
+  document.getElementById('um-fullname').value = '';
+  document.getElementById('um-email').value = '';
+  document.getElementById('um-role').value = 'editor';
+  document.getElementById('um-password').value = '';
+  document.getElementById('um-is-super-admin').checked = false;
+  document.getElementById('um-error').style.display = 'none';
+  document.getElementById('user-modal-title').textContent = 'Kullanıcı Ekle';
+  const uEl = document.getElementById('um-username');
+  uEl.readOnly = false; uEl.style.background = '';
+
+  // If no tenant selected, show tenant select
+  if (!tid) {
+    // populate tenant options in a hidden select (future)
+    toast('Önce bir tenant seçin', 'info'); return;
+  }
+  document.getElementById('user-modal').classList.add('open');
+}
+function closeUserModal() { document.getElementById('user-modal').classList.remove('open'); }
+
+async function saveUser() {
+  const tenantId    = parseInt(document.getElementById('um-tenant-id').value);
+  const username    = document.getElementById('um-username').value.trim();
+  const fullName    = document.getElementById('um-fullname').value.trim();
+  const email       = document.getElementById('um-email').value.trim();
+  const role        = document.getElementById('um-role').value;
+  const password    = document.getElementById('um-password').value;
+  const isSuperAdmin= document.getElementById('um-is-super-admin').checked;
+  const errEl = document.getElementById('um-error');
+  errEl.style.display = 'none';
+
+  if (!username || !fullName || !password) {
+    errEl.textContent = 'Kullanıcı adı, ad soyad ve şifre zorunludur'; errEl.style.display = 'block'; return;
+  }
+
+  const btn = document.getElementById('um-save-btn');
+  btn.disabled = true; btn.textContent = 'Kaydediliyor…';
+  try {
+    const r = await saFetch(`/api/super-admin/tenants/${tenantId}/users`, {
+      method: 'POST',
+      body: JSON.stringify({ username, fullName, email, role, password, isSuperAdmin })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Hata'; errEl.style.display = 'block'; return; }
+    toast(`"${fullName}" kullanıcısı oluşturuldu`, 'success');
+    closeUserModal();
+    if (currentDetailTenantId) viewTenantUsers(currentDetailTenantId, '');
+    loadAllUsersData();
+    loadDashboard();
+  } catch(e) { errEl.textContent = 'Sunucu hatası'; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Kaydet'; }
+}
+
+// ── Edit User Modal ────────────────────────────────────────────────────────────
+function openEditUserModalData(u) {
+  document.getElementById('eum-id').value       = u.id;
+  document.getElementById('eum-fullname').value = u.fullName;
+  document.getElementById('eum-email').value    = u.email || '';
+  document.getElementById('eum-role').value     = u.role;
+  document.getElementById('eum-password').value = '';
+  document.getElementById('eum-is-super-admin').checked = u.isSuperAdmin || false;
+  document.getElementById('eum-error').style.display = 'none';
+  document.getElementById('edit-user-modal').classList.add('open');
+}
+function closeEditUserModal() { document.getElementById('edit-user-modal').classList.remove('open'); }
+
+async function updateUser() {
+  const id        = parseInt(document.getElementById('eum-id').value);
+  const fullName  = document.getElementById('eum-fullname').value.trim();
+  const email     = document.getElementById('eum-email').value.trim();
+  const role      = document.getElementById('eum-role').value;
+  const password  = document.getElementById('eum-password').value;
+  const isSuperAdmin = document.getElementById('eum-is-super-admin').checked;
+  const errEl = document.getElementById('eum-error');
+  errEl.style.display = 'none';
+
+  try {
+    const r = await saFetch(`/api/super-admin/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ fullName, email, role, password: password || undefined, isSuperAdmin })
+    });
+    const data = await r.json();
+    if (!r.ok) { errEl.textContent = data.error || 'Hata'; errEl.style.display = 'block'; return; }
+    toast('Kullanıcı güncellendi', 'success');
+    closeEditUserModal();
+    if (currentDetailTenantId) viewTenantUsers(currentDetailTenantId, '');
+    loadAllUsersData();
+  } catch(e) { errEl.textContent = 'Sunucu hatası'; errEl.style.display = 'block'; }
+}
+
+async function toggleUserStatus(id, context) {
+  try {
+    const r = await saFetch(`/api/super-admin/users/${id}/status`, { method: 'PATCH', body: '{}' });
+    const data = await r.json();
+    if (!r.ok) { toast(data.error || 'Hata', 'error'); return; }
+    toast(`Kullanıcı ${data.isActive ? 'aktifleştirildi' : 'durduruldu'}`, 'success');
+    if (context === 'detail' && currentDetailTenantId) viewTenantUsers(currentDetailTenantId, document.getElementById('detail-tenant-title').textContent.split('—')[0].replace('👥','').trim());
+    if (context === 'users') loadAllUsersData();
+    loadDashboard();
+  } catch(e) { toast('Sunucu hatası', 'error'); }
+}
+
+// ── All Users Page ────────────────────────────────────────────────────────────
+async function loadAllUsersData() {
+  try {
+    const r = await saFetch('/api/super-admin/users');
+    if (!r.ok) return;
+    allUsersData = await r.json();
+    filterUsers();
+  } catch(e) {}
+}
+
+function filterUsers() {
+  const q          = (document.getElementById('user-search').value || '').toLowerCase();
+  const tenantFilt = document.getElementById('user-tenant-filter').value;
+  const roleFilt   = document.getElementById('user-role-filter').value;
+
+  const filtered = allUsersData.filter(u => {
+    const matchQ      = !q || u.username.toLowerCase().includes(q) || u.fullName.toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+    const matchTenant = !tenantFilt || u.tenantId == tenantFilt;
+    const matchRole   = !roleFilt || u.role === roleFilt;
+    return matchQ && matchTenant && matchRole;
+  });
+  renderAllUsers(filtered);
+}
+
+function renderAllUsers(list) {
+  const tbody = document.getElementById('users-tbody');
+  if (!list.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Kullanıcı bulunamadı</td></tr>'; return; }
+  tbody.innerHTML = list.map(u => `
+    <tr>
+      <td style="font-weight:600">${escHtml(u.username)}</td>
+      <td>${escHtml(u.fullName)}</td>
+      <td style="color:var(--text2)">${escHtml(u.tenantName || '—')}</td>
+      <td>${roleBadge(u.role)}</td>
+      <td>${u.isSuperAdmin ? '<span class="badge badge-purple">⚡ SA</span>' : '<span style="color:var(--text3)">—</span>'}</td>
+      <td><span class="badge ${u.isActive ? 'badge-green' : 'badge-red'}">${u.isActive ? '● Aktif' : '○ Pasif'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEditUserModalData(${JSON.stringify(u).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="btn btn-${u.isActive ? 'danger' : 'success'} btn-sm" onclick="toggleUserStatus(${u.id},'users')">${u.isActive ? 'Durdur' : 'Aktif'}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function populateTenantFilter() {
+  const sel = document.getElementById('user-tenant-filter');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Tüm Tenantlar</option>' +
+    allTenants.map(t => `<option value="${t.id}" ${t.id == current ? 'selected' : ''}>${escHtml(t.name)}</option>`).join('');
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function roleBadge(role) {
+  const map = {
+    admin:  '<span class="badge badge-blue">🛡 Admin</span>',
+    editor: '<span class="badge badge-orange">✏️ Editör</span>',
+    viewer: '<span class="badge" style="background:var(--surface3);color:var(--text2);border:1px solid var(--border)">👁 Görüntüleyici</span>',
+  };
+  return map[role] || role;
+}
+
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+checkSAAuth();
+</script>
+</body>
+</html>

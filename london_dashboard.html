@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Londra Borough Karşılaştırma Raporu</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --bg:#0f1117; --card:#1a1d27; --border:#2a2d3a;
+    --a1:#4f8ef7; --a2:#f74f6a; --a3:#4ff7a8; --a4:#f7c44f;
+    --a5:#bf4ff7; --a6:#f7944f; --a7:#4ff7f0;
+    --text:#e8eaf0; --muted:#7a7d8c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+  header{background:linear-gradient(135deg,#1a1d27,#0f1117);border-bottom:1px solid var(--border);padding:24px 40px}
+  header h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+  header h1 span{color:var(--a1)}
+  header p{color:var(--muted);margin-top:5px;font-size:12px}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;margin:4px 4px 0 0}
+  .b1{background:rgba(79,142,247,.15);color:var(--a1);border:1px solid rgba(79,142,247,.3)}
+  .b2{background:rgba(247,79,106,.15);color:var(--a2);border:1px solid rgba(247,79,106,.3)}
+  .b3{background:rgba(79,247,168,.15);color:var(--a3);border:1px solid rgba(79,247,168,.3)}
+  .b4{background:rgba(247,196,79,.15);color:var(--a4);border:1px solid rgba(247,196,79,.3)}
+  .b5{background:rgba(191,79,247,.15);color:var(--a5);border:1px solid rgba(191,79,247,.3)}
+  .b6{background:rgba(247,148,79,.15);color:var(--a6);border:1px solid rgba(247,148,79,.3)}
+  .b7{background:rgba(79,247,240,.15);color:var(--a7);border:1px solid rgba(79,247,240,.3)}
+  .container{max-width:1600px;margin:0 auto;padding:28px 40px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:28px}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:7px}
+  .kpi-value{font-size:24px;font-weight:700;line-height:1}
+  .kpi-sub{font-size:10px;color:var(--muted);margin-top:5px}
+  .stitle{font-size:17px;font-weight:600;margin:28px 0 14px;display:flex;align-items:center;gap:8px}
+  .stitle::before{content:'';display:inline-block;width:4px;height:18px;background:var(--a1);border-radius:2px}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+  .g1{margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px}
+  .ctitle{font-size:13px;font-weight:600;margin-bottom:3px}
+  .csub{font-size:11px;color:var(--muted);margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  thead th{background:#1f2233;padding:9px 11px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap}
+  thead th:hover{color:var(--text);background:#252840}
+  thead th.sa::after{content:' ↑';color:var(--a1)}
+  thead th.sd::after{content:' ↓';color:var(--a1)}
+  tbody tr{border-bottom:1px solid rgba(255,255,255,.04)}
+  tbody tr:hover{background:rgba(255,255,255,.03)}
+  tbody td{padding:8px 11px}
+  tbody td:first-child{font-weight:600}
+  .bc{display:flex;align-items:center;gap:7px}
+  .bb{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;min-width:50px}
+  .bf{height:100%;border-radius:3px}
+  .bv{min-width:50px;text-align:right;font-size:11px}
+  .tabs{display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--muted);transition:all .15s}
+  .tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+  .tab.active{background:rgba(79,142,247,.15);color:var(--a1);border-color:rgba(79,142,247,.4)}
+  .tc{display:none}
+  .tc.active{display:block}
+  .note{background:rgba(247,196,79,.08);border:1px solid rgba(247,196,79,.2);border-radius:8px;padding:11px 15px;font-size:11px;color:var(--a4);margin-bottom:18px}
+  /* Life Index */
+  .li-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
+  .li-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:20px;text-align:center;transition:all .2s;cursor:default}
+  .li-card:hover{border-color:var(--a1);transform:translateY(-2px)}
+  .li-rank{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .li-name{font-size:14px;font-weight:700;margin-bottom:8px}
+  .li-score{font-size:32px;font-weight:800;line-height:1}
+  .li-bars{margin-top:10px;font-size:10px;color:var(--muted)}
+  .footer{text-align:center;padding:36px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:36px}
+  .medal-1{color:#f7c44f} .medal-2{color:#c0c0c0} .medal-3{color:#cd7f32}
+  /* Choropleth map */
+  #liMap{height:520px;border-radius:10px;background:#0f1117}
+  .leaflet-container{background:#0f1117!important}
+  .map-legend{background:rgba(26,29,39,.95);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:11px;line-height:1.8;color:var(--text)}
+  .map-legend .grad{width:140px;height:10px;border-radius:5px;background:linear-gradient(to right,#f74f6a,#f7c44f,#4ff7a8);margin:6px 0 3px}
+  .li-tooltip{background:rgba(26,29,39,.97)!important;border:1px solid var(--border)!important;border-radius:8px!important;color:var(--text)!important;font-size:12px!important;padding:8px 12px!important;box-shadow:0 4px 20px rgba(0,0,0,.5)!important}
+</style>
+</head>
+<body>
+<header>
+  <h1>Londra <span>Borough</span> Karşılaştırma Raporu</h1>
+  <p>32 borough · 12 veri kategorisi · Suç · Ekonomi · Mutluluk · Eğitim · Kira · Nüfus · Çevre · Sağlık · Yeşil Alan · Outstanding Okullar · Yoksunluk · Toplum İmkânları</p>
+  <div>
+    <span class="badge b2">Suç: police.uk — Ocak 2024</span>
+    <span class="badge b4">Ekonomi: ONS ASHE — 2023</span>
+    <span class="badge b3">Mutluluk: ONS APSurvey — 2022-23</span>
+    <span class="badge b1">Nüfus: ONS MYE — Haziran 2024</span>
+    <span class="badge b5">Eğitim: DfE GCSE + Ofsted — 2022-24</span>
+    <span class="badge b6">Kira: ONS PRM — 2022-23</span>
+    <span class="badge b7">Çevre &amp; Sağlık: LWSM — 2020-23</span>
+    <span class="badge b2">Yoksunluk: IMD 2025</span>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-label">Toplam Nüfus</div><div class="kpi-value" style="color:var(--a1)">9.11M</div><div class="kpi-sub">32 borough, 2024</div></div>
+  <div class="kpi"><div class="kpi-label">En Yüksek Suç</div><div class="kpi-value" style="color:var(--a2)">Westminster</div><div class="kpi-sub">2.993 kayıt / Oc.24</div></div>
+  <div class="kpi"><div class="kpi-label">En Yüksek Maaş</div><div class="kpi-value" style="color:var(--a4)">K&amp;C</div><div class="kpi-sub">£855.9/hft medyan</div></div>
+  <div class="kpi"><div class="kpi-label">En Mutlu</div><div class="kpi-value" style="color:var(--a3)">Newham</div><div class="kpi-sub">8.0 / 10 puan</div></div>
+  <div class="kpi"><div class="kpi-label">En İyi GCSE</div><div class="kpi-value" style="color:var(--a5)">Kingston</div><div class="kpi-sub">Att8: 59.1 puan</div></div>
+  <div class="kpi"><div class="kpi-label">En Uzun Sağlıklı Yaşam</div><div class="kpi-value" style="color:var(--a7)">Richmond</div><div class="kpi-sub">69.6 yıl (LWSM)</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active"  onclick="sw('overview')">Genel Bakış</div>
+  <div class="tab" onclick="sw('index')">Yaşam Endeksi</div>
+  <div class="tab" onclick="sw('crime')">Suç</div>
+  <div class="tab" onclick="sw('economy')">Ekonomi</div>
+  <div class="tab" onclick="sw('wellbeing')">Mutluluk</div>
+  <div class="tab" onclick="sw('education')">Eğitim</div>
+  <div class="tab" onclick="sw('housing')">Konut &amp; Kira</div>
+  <div class="tab" onclick="sw('environment')">Çevre &amp; Sağlık</div>
+  <div class="tab" onclick="sw('traffic')">Trafik</div>
+  <div class="tab" onclick="sw('population')">Nüfus</div>
+  <div class="tab" onclick="sw('deprivation')">Yoksunluk</div>
+  <div class="tab" onclick="sw('correlations')">Korelasyonlar</div>
+  <div class="tab" onclick="sw('table')">Veri Tablosu</div>
+</div>
+
+<!-- GENEL BAKIŞ -->
+<div id="tab-overview" class="tc active">
+  <div class="note">Suç verileri borough merkez koordinatından 1 mil yarıçapındaki kayıtları yansıtır. City of London refah/maaş verisi ONS tarafından ayrı tutulmaz.</div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Suç — En Yüksek 15 Borough</div><div class="csub">Ocak 2024 · police.uk API</div><div style="height:300px"><canvas id="cCrimeHigh"></canvas></div></div>
+    <div class="card"><div class="ctitle">Suç — En Düşük 15 Borough</div><div class="csub">Ocak 2024 · police.uk API</div><div style="height:300px"><canvas id="cCrimeLow"></canvas></div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ctitle">Medyan Maaş — Top 10</div><div class="csub">ONS ASHE 2023 · £/hft</div><div style="height:260px"><canvas id="cEarnTop"></canvas></div></div>
+    <div class="card"><div class="ctitle">Mutluluk — Top 10</div><div class="csub">ONS 2022-23 · 0-10 ölçeği</div><div style="height:260px"><canvas id="cHapTop"></canvas></div></div>
+    <div class="card"><div class="ctitle">Sağlıklı Yaşam Süresi — Top 10</div><div class="csub">LWSM ind26 · Yıl (18/20)</div><div style="height:260px"><canvas id="cLifeTop"></canvas></div></div>
+  </div>
+</div>
+
+<!-- YAŞAM ENDEKSİ -->
+<div id="tab-index" class="tc">
+  <div class="note">Yaşam Endeksi: 12 metrik ağırlıklı ortalama · <b>En Yüksek (×3):</b> Suç, Eğitim · <b>Yüksek (×2):</b> Trafik, Sağlıklı Yaşam, Yeşil Alan, Toplum İmkânları · <b>Orta (×1.5):</b> Yoksunluk, Mutluluk, Ekonomi, Kira, Hava Kalitesi · <b>Düşük (×1):</b> Maaş · Suç, Kira, Trafik, Yoksunluk ters yönde. Her metrik 0-100 normalize.</div>
+  <div id="liCards" class="li-grid"></div>
+  <div class="g1">
+    <div class="card">
+      <div class="ctitle">Yaşam Endeksi — Borough Haritası</div>
+      <div class="csub">Borough üzerine gelin · Kırmızı = düşük · Sarı = orta · Yeşil = yüksek</div>
+      <div id="liMap"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Yaşam Endeksi — Tüm Borough Sıralaması</div><div class="csub">Bileşik skor: 11 metrik ağırlıklı ortalama</div><div style="height:500px"><canvas id="cLiAll"></canvas></div></div>
+    <div class="card"><div class="ctitle">Radar — En İyi 5 Borough</div><div class="csub">11 metrik karşılaştırması (normalize)</div><div style="height:500px"><canvas id="cLiRadar"></canvas></div></div>
+  </div>
+  <div class="g1">
+    <div class="card">
+      <div class="ctitle">Tam Sıralama Tablosu — 32 Borough</div>
+      <div class="csub">Yaşam Endeksi ağırlıklı puan · Tüm metrikler dahil</div>
+      <div id="liRankTable"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUÇ -->
+<div id="tab-crime" class="tc">
+  <div class="g1"><div class="card"><div class="ctitle">Tüm Borough'lar — Suç Sayısı (Ocak 2024)</div><div class="csub">police.uk API · Borough merkez koordinatından 1 mil</div><div style="height:500px"><canvas id="cCrimeAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Suç / 1000 Kişi (Nüfusa Normalize)</div><div class="csub">Ocak 2024 ÷ 2024 nüfus × 1000</div><div style="height:400px"><canvas id="cCrimePc"></canvas></div></div>
+    <div class="card"><div class="ctitle">Suç vs Kira İlişkisi</div><div class="csub">Yüksek suç bölgesi = yüksek kira mı?</div><div style="height:400px"><canvas id="cCrimeRent"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Suç vs Mutluluk İlişkisi</div><div class="csub">Suç arttıkça mutluluk düşüyor mu?</div><div style="height:400px"><canvas id="cCrimeHap"></canvas></div></div>
+    <div class="card"><div class="ctitle">Suç / 1000 Kişi vs Mutluluk</div><div class="csub">Nüfusa göre normalize suç ile mutluluk ilişkisi</div><div style="height:400px"><canvas id="cCrimePcHap"></canvas></div></div>
+  </div>
+</div>
+
+<!-- EKONOMİ -->
+<div id="tab-economy" class="tc">
+  <div class="g1"><div class="card"><div class="ctitle">Tüm Borough'lar — Medyan Haftalık Maaş (2023)</div><div class="csub">ONS ASHE · £/hft · Tüm çalışanlar</div><div style="height:500px"><canvas id="cEarnAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Maaş vs Kira</div><div class="csub">Yüksek maaşlı bölgede kira ne kadar?</div><div style="height:380px"><canvas id="cEarnRent"></canvas></div></div>
+    <div class="card"><div class="ctitle">Maaş vs GCSE</div><div class="csub">Yüksek maaşlı bölgede eğitim skoru daha iyi mi?</div><div style="height:380px"><canvas id="cEarnGcse"></canvas></div></div>
+  </div>
+</div>
+
+<!-- MUTLULUK -->
+<div id="tab-wellbeing" class="tc">
+  <div class="g2">
+    <div class="card"><div class="ctitle">Yaşam Memnuniyeti — Tüm Borough'lar</div><div class="csub">ONS 2022-23 · 0-10</div><div style="height:450px"><canvas id="cLsAll"></canvas></div></div>
+    <div class="card"><div class="ctitle">Mutluluk — Tüm Borough'lar</div><div class="csub">ONS 2022-23 · 0-10</div><div style="height:450px"><canvas id="cHapAll"></canvas></div></div>
+  </div>
+  <div class="g1"><div class="card"><div class="ctitle">Yaşam Memnuniyeti vs Mutluluk Karşılaştırması</div><div class="csub">Her borough için iki metrik yan yana</div><div style="height:380px"><canvas id="cWbComp"></canvas></div></div></div>
+</div>
+
+<!-- EĞİTİM -->
+<div id="tab-education" class="tc">
+  <div class="g1"><div class="card"><div class="ctitle">GCSE Attainment 8 — Tüm Borough'lar (2023-24)</div><div class="csub">DfE · Ortalama Attainment 8 puanı / öğrenci</div><div style="height:500px"><canvas id="cGcseAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">GCSE Pass Rate (Grade 5+) — Tüm Borough'lar</div><div class="csub">İngilizce &amp; Matematik 5+ nota ulaşan öğrenci %'si</div><div style="height:400px"><canvas id="cGcsePc"></canvas></div></div>
+    <div class="card"><div class="ctitle">GCSE vs Mutluluk</div><div class="csub">Eğitim skoru ile mutluluk arasında ilişki var mı?</div><div style="height:400px"><canvas id="cGcseHap"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Outstanding Okul Oranı — Tüm Borough'lar</div><div class="csub">Ofsted Aralık 2022 · Secondary &amp; All-through · % outstanding</div><div style="height:450px"><canvas id="cOutstandAll"></canvas></div></div>
+    <div class="card"><div class="ctitle">Outstanding Okul vs Mutluluk</div><div class="csub">İyi okul oranı yüksek bölge daha mutlu mu?</div><div style="height:450px"><canvas id="cOutstandHap"></canvas></div></div>
+  </div>
+</div>
+
+<!-- KONUT & KİRA -->
+<div id="tab-housing" class="tc">
+  <div class="g1"><div class="card"><div class="ctitle">Tüm Borough'lar — Medyan Aylık Kira (2022-23)</div><div class="csub">ONS Private Rental Market Statistics · Tüm oda sayıları · £/ay</div><div style="height:500px"><canvas id="cRentAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Kira vs Mutluluk</div><div class="csub">Yüksek kirada mutlu olmak mümkün mü?</div><div style="height:380px"><canvas id="cRentHap"></canvas></div></div>
+    <div class="card"><div class="ctitle">Kira / Maaş Oranı (%)</div><div class="csub">Aylık kiranın haftalık maaşa oranı — yük endeksi</div><div style="height:380px"><canvas id="cRentRatio"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ÇEVRE & SAĞLIK -->
+<div id="tab-environment" class="tc">
+  <div class="note">LWSM (London Wellbeing &amp; Sustainability Measure) verileri. Yeşil Alan: erişilebilir yeşil alan oranı (0-1). Sağlıklı Yaşam: sağlıkla geçirilen beklenen yıl sayısı. Spor: aktif spor katılım oranı.</div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Yeşil Alan Erişimi — Tüm Borough'lar</div><div class="csub">LWSM ind60 · 2023 · Erişilebilir yeşil alan oranı</div><div style="height:450px"><canvas id="cGreenAll"></canvas></div></div>
+    <div class="card"><div class="ctitle">Sağlıklı Yaşam Süresi — Tüm Borough'lar</div><div class="csub">LWSM ind26 · 2018/20 · Yıl cinsinden</div><div style="height:450px"><canvas id="cLifeAll"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Spor Katılım Oranı — Tüm Borough'lar</div><div class="csub">LWSM ind46 · 2020/21 · Aktif spor yapan nüfus oranı</div><div style="height:420px"><canvas id="cSportAll"></canvas></div></div>
+    <div class="card"><div class="ctitle">Yeşil Alan vs Sağlıklı Yaşam</div><div class="csub">Daha fazla yeşil alan = daha uzun sağlıklı yaşam mı?</div><div style="height:420px"><canvas id="cGreenLife"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Sağlıklı Yaşam vs Mutluluk</div><div class="csub">Sağlıklı yaşayan boroughlar daha mutlu mu?</div><div style="height:380px"><canvas id="cLifeHap"></canvas></div></div>
+    <div class="card"><div class="ctitle">Yeşil Alan vs Mutluluk</div><div class="csub">Yeşil alan ile refah arasındaki korelasyon</div><div style="height:380px"><canvas id="cGreenHap"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Gece Güvenliği — Tüm Borough'lar</div><div class="csub">LWSM ind49 · 2021/22 · Geceleri güvende hisseden nüfus oranı</div><div style="height:420px"><canvas id="cNightAll"></canvas></div></div>
+    <div class="card"><div class="ctitle">Gece Güvenliği vs Suç</div><div class="csub">Suç yüksekse gece güvenliği hissi düşüyor mu?</div><div style="height:420px"><canvas id="cNightCrime"></canvas></div></div>
+  </div>
+</div>
+
+<!-- TRAFİK -->
+<div id="tab-traffic" class="tc">
+  <div class="note">DfT Ulusal Karayolu Trafik Araştırması (NRTS) · Milyon Araç Km (MvKm) · 2024 · Kaynak: data.london.gov.uk/dataset/traffic-flows-borough-v8pow</div>
+  <div class="g1"><div class="card"><div class="ctitle">Toplam Trafik Hacmi — Tüm Borough'lar (2024)</div><div class="csub">DfT NRTS · Milyon Araç Km / yıl</div><div style="height:500px"><canvas id="cTrafficAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Kişi Başı Trafik (Araç Km / Kişi)</div><div class="csub">MvKm × 1.000.000 ÷ Nüfus · Yüksek = trafik yoğunluğu</div><div style="height:400px"><canvas id="cTrafficPc"></canvas></div></div>
+    <div class="card"><div class="ctitle">Trafik vs Mutluluk</div><div class="csub">Trafik yoğun boroughda mutluluk düşer mi?</div><div style="height:400px"><canvas id="cTrafficHap"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">Trafik vs Kira</div><div class="csub">Trafik yoğunluğu kira fiyatlarını etkiler mi?</div><div style="height:380px"><canvas id="cTrafficRent"></canvas></div></div>
+    <div class="card"><div class="ctitle">Trafik vs Hava Kalitesi</div><div class="csub">Daha fazla trafik = daha kötü hava? (LWSM ind59 — düşük=kötü)</div><div style="height:380px"><canvas id="cTrafficAir"></canvas></div></div>
+  </div>
+</div>
+
+<!-- NÜFUS -->
+<div id="tab-population" class="tc">
+  <div class="g1"><div class="card"><div class="ctitle">Nüfus — Tüm Borough'lar (Haziran 2024)</div><div class="csub">ONS MYE 2024 · 2023 LA sınırları</div><div style="height:500px"><canvas id="cPopAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">İlk 10 En Kalabalık Borough</div><div class="csub">2024 tahminleri</div><div style="height:320px"><canvas id="cPopTop"></canvas></div></div>
+    <div class="card"><div class="ctitle">Nüfus Dağılımı</div><div class="csub">33 Borough — oransal</div><div style="height:320px"><canvas id="cPopDonut"></canvas></div></div>
+  </div>
+</div>
+
+<!-- YOKSUNLUK -->
+<div id="tab-deprivation" class="tc">
+  <div class="note">İngiliz Yoksunluk Endeksi (IMD) 2025 · Gelir, istihdam, eğitim, sağlık, suç, barınma ve çevre alt endekslerinin bileşimi. Yüksek puan = daha yoksun. Kaynak: MHCLG / gov.uk, 2025.</div>
+  <div class="g1"><div class="card"><div class="ctitle">IMD 2025 — Tüm Borough Sıralaması</div><div class="csub">Ortalama IMD puanı · Düşük = az yoksun · Yüksek = çok yoksun</div><div style="height:500px"><canvas id="cImdAll"></canvas></div></div></div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">IMD vs Maaş</div><div class="csub">Yoksun bölgelerde gelir daha düşük mü?</div><div style="height:380px"><canvas id="cImdEarn"></canvas></div></div>
+    <div class="card"><div class="ctitle">IMD vs Mutluluk</div><div class="csub">Yoksunluk arttıkça mutluluk düşüyor mu?</div><div style="height:380px"><canvas id="cImdHap"></canvas></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ctitle">IMD vs Suç</div><div class="csub">Yoksun boroughlarda suç daha yüksek mi?</div><div style="height:380px"><canvas id="cImdCrime"></canvas></div></div>
+    <div class="card"><div class="ctitle">IMD vs Yeşil Alan</div><div class="csub">Yoksun bölgelerde yeşil alan erişimi daha az mı?</div><div style="height:380px"><canvas id="cImdGreen"></canvas></div></div>
+  </div>
+</div>
+
+<!-- KORELASYONLAR -->
+<div id="tab-correlations" class="tc">
+  <div class="g3">
+    <div class="card"><div class="ctitle">Maaş vs Mutluluk</div><div class="csub">Para mutluluk satın alır mı?</div><div style="height:300px"><canvas id="cCE1"></canvas></div></div>
+    <div class="card"><div class="ctitle">Suç vs Mutluluk</div><div class="csub">Suç arttıkça mutluluk düşüyor mu?</div><div style="height:300px"><canvas id="cCE2"></canvas></div></div>
+    <div class="card"><div class="ctitle">Kira vs Mutluluk</div><div class="csub">Yüksek kira mutsuz eder mi?</div><div style="height:300px"><canvas id="cCE3"></canvas></div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ctitle">GCSE vs Maaş</div><div class="csub">İyi eğitim = yüksek maaş mı?</div><div style="height:300px"><canvas id="cCE4"></canvas></div></div>
+    <div class="card"><div class="ctitle">Kira vs Maaş</div><div class="csub">Yüksek maaş her zaman yüksek kira mı?</div><div style="height:300px"><canvas id="cCE5"></canvas></div></div>
+    <div class="card"><div class="ctitle">Nüfus vs Suç</div><div class="csub">Kalabalık = daha fazla suç?</div><div style="height:300px"><canvas id="cCE6"></canvas></div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ctitle">Outstanding Okul vs Mutluluk</div><div class="csub">İyi okul = mutlu bölge mi?</div><div style="height:300px"><canvas id="cCE7"></canvas></div></div>
+    <div class="card"><div class="ctitle">Outstanding Okul vs Maaş</div><div class="csub">İyi okul oranı maaşla ilişkili mi?</div><div style="height:300px"><canvas id="cCE8"></canvas></div></div>
+    <div class="card"><div class="ctitle">Sağlıklı Yaşam vs Maaş</div><div class="csub">Yüksek maaş daha uzun sağlıklı yaşam mı?</div><div style="height:300px"><canvas id="cCE9"></canvas></div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ctitle">Trafik (kişi başı) vs Mutluluk</div><div class="csub">Trafik yoğun boroughda mutluluk düşüyor mu?</div><div style="height:300px"><canvas id="cCE10"></canvas></div></div>
+    <div class="card"><div class="ctitle">Trafik (kişi başı) vs Suç</div><div class="csub">Trafik yoğun bölgelerde suç daha yüksek mi?</div><div style="height:300px"><canvas id="cCE11"></canvas></div></div>
+    <div class="card"><div class="ctitle">Trafik (kişi başı) vs Kira</div><div class="csub">Trafik yoğunluğu kira fiyatını etkiler mi?</div><div style="height:300px"><canvas id="cCE12"></canvas></div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ctitle">IMD 2025 vs Mutluluk</div><div class="csub">Yoksunluk mutluluğu ne kadar etkiliyor?</div><div style="height:300px"><canvas id="cCE13"></canvas></div></div>
+    <div class="card"><div class="ctitle">IMD 2025 vs Maaş</div><div class="csub">Yoksun boroughlarda gelir daha mı düşük?</div><div style="height:300px"><canvas id="cCE14"></canvas></div></div>
+    <div class="card"><div class="ctitle">IMD 2025 vs Suç</div><div class="csub">Yoksunluk ile suç arasındaki bağ</div><div style="height:300px"><canvas id="cCE15"></canvas></div></div>
+  </div>
+</div>
+
+<!-- VERİ TABLOSU -->
+<div id="tab-table" class="tc">
+  <div class="card">
+    <div class="ctitle">Londra Borough Tam Veri Tablosu</div>
+    <div class="csub">Sütun başlığına tıklayarak sıralayın</div><br>
+    <div style="overflow-x:auto">
+      <table id="dt">
+        <thead><tr>
+          <th onclick="st(0)">Borough</th>
+          <th onclick="st(1)">Nüfus</th>
+          <th onclick="st(2)">Suç</th>
+          <th onclick="st(3)">Suç/1k</th>
+          <th onclick="st(4)">Maaş £/hft</th>
+          <th onclick="st(5)">Kira £/ay</th>
+          <th onclick="st(6)">Yaş.Mem.</th>
+          <th onclick="st(7)">Mutluluk</th>
+          <th onclick="st(8)">GCSE Att8</th>
+          <th onclick="st(9)">GCSE 5+%</th>
+          <th onclick="st(10)">Outstanding%</th>
+          <th onclick="st(11)">Yeşil Alan</th>
+          <th onclick="st(12)">Sağ.Yaşam(yıl)</th>
+          <th onclick="st(13)">Spor%</th>
+          <th onclick="st(14)">IMD 2025</th>
+          <th onclick="st(15)">Yaşam Endeksi</th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+<div class="footer">
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:14px;font-size:11px">
+    <a href="https://data.police.uk/docs/method/crime-street/" target="_blank" style="color:var(--a2);text-decoration:none">🔴 Suç: data.police.uk — Ocak 2024</a>
+    <a href="https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/annualsurveyofhoursandearningsashegrosswagesearningstableandexcelsheets" target="_blank" style="color:var(--a4);text-decoration:none">💛 Maaş: ONS ASHE 2023</a>
+    <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/datasets/headlineestimatesofpersonalwellbeing" target="_blank" style="color:var(--a3);text-decoration:none">💚 Mutluluk: ONS Personal Wellbeing 2022-23</a>
+    <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland" target="_blank" style="color:var(--a1);text-decoration:none">🔵 Nüfus: ONS MYE Haziran 2024</a>
+    <a href="https://www.compare-school-performance.service.gov.uk/download-data" target="_blank" style="color:var(--a5);text-decoration:none">🟣 GCSE: DfE 2023-24</a>
+    <a href="https://assets.publishing.service.gov.uk/media/63c01a7fd3bf7f6c1c11226d/Management_information_-_state-funded_schools_-_latest_inspections_at_31_Dec_2022.csv" target="_blank" style="color:var(--a7);text-decoration:none">🩵 Outstanding: Ofsted Aralık 2022</a>
+    <a href="https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/privaterentalmarketsummarystatisticsinengland" target="_blank" style="color:var(--a6);text-decoration:none">🟠 Kira: ONS PRM 2022-23</a>
+    <a href="https://data.london.gov.uk/dataset/london-wellbeing-and-sustainability-measure" target="_blank" style="color:var(--a3);text-decoration:none">💚 Çevre &amp; Sağlık: LWSM — ind26/46/49/59/60</a>
+    <a href="https://data.london.gov.uk/dataset/traffic-flows-borough-v8pow" target="_blank" style="color:var(--a1);text-decoration:none">🔵 Trafik: DfT NRTS via London Datastore 2024</a>
+    <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025" target="_blank" style="color:var(--a2);text-decoration:none">🔴 Yoksunluk: IMD 2025 — MHCLG / gov.uk</a>
+    <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/wellbeing/datasets/numberofcommunityfacilitiesinlocalareasenglandandwales" target="_blank" style="color:var(--a3);text-decoration:none">💚 Toplum İmkânları: ONS Community Facilities per 100k — Temmuz 2024</a>
+  </div>
+  <div style="color:var(--muted);font-size:10px">
+    Hava Kalitesi: LWSM ind59 2019/20 verisi · Atlandı: Yol Gürültüsü (2015/16 — 5 yıl dışı) · PTAL 2023 (ızgara verisi, borough ortalaması mevcut değil) · NHS GP · LWSM ind57 (borough verisi yok)<br>
+    Selami Komutan Yazılım Ordusu · 150 Kişilik Kadro · Tüm veriler gerçek açık kaynaklıdır
+  </div>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.color='#7a7d8c';
+Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
+
+const DATA=[
+  {n:"Barking & Dagenham",  pop:232747, crime:568,  earn:558.4, rent:1100, ls:7.48, hap:7.48, gcse:47.2, pass5:46.9, outstand:38.5, greensp:0.381, lifeexp:59.1, sport:0.857, traffic:662.0,  nightsafe:0.51, imd:30.266, airq:0.24977, commfac:27.0},
+  {n:"Barnet",              pop:405050, crime:274,  earn:633.1, rent:1300, ls:6.95, hap:6.95, gcse:57.3, pass5:66.6, outstand:14.3, greensp:0.518, lifeexp:65.0, sport:0.945, traffic:1693.3, nightsafe:0.64, imd:19.499, airq:0.24935, commfac:32.4},
+  {n:"Bexley",              pop:256434, crime:321,  earn:680.2, rent:1000, ls:7.29, hap:7.39, gcse:50.4, pass5:55.0, outstand:12.5, greensp:0.370, lifeexp:65.2, sport:0.917, traffic:999.3,  nightsafe:0.68, imd:15.302, airq:0.24985, commfac:48.2},
+  {n:"Brent",               pop:352976, crime:803,  earn:634.6, rent:1300, ls:7.09, hap:7.27, gcse:51.6, pass5:55.7, outstand:25.0, greensp:0.387, lifeexp:65.6, sport:0.915, traffic:966.9,  nightsafe:0.55, imd:30.046, airq:0.24895, commfac:33.4},
+  {n:"Bromley",             pop:335319, crime:454,  earn:718.0, rent:1150, ls:7.33, hap:7.35, gcse:50.5, pass5:55.7, outstand:21.1, greensp:0.491, lifeexp:67.5, sport:0.959, traffic:1434.4, nightsafe:0.77, imd:12.673, airq:0.25000, commfac:38.7},
+  {n:"Camden",              pop:216943, crime:1488, earn:732.1, rent:1725, ls:7.29, hap:7.28, gcse:47.9, pass5:50.7, outstand:10.0, greensp:0.440, lifeexp:65.7, sport:0.940, traffic:447.1,  nightsafe:0.67, imd:23.695, airq:0.24695, commfac:34.9},
+  {n:"Croydon",             pop:409342, crime:1242, earn:678.0, rent:1100, ls:6.97, hap:7.11, gcse:44.8, pass5:44.2, outstand:8.3,  greensp:0.467, lifeexp:62.8, sport:0.927, traffic:1357.7, nightsafe:0.57, imd:22.562, airq:0.24997, commfac:38.5},
+  {n:"Ealing",              pop:385985, crime:726,  earn:623.1, rent:1330, ls:7.28, hap:7.25, gcse:52.0, pass5:57.7, outstand:29.4, greensp:0.414, lifeexp:63.3, sport:0.934, traffic:1268.4, nightsafe:0.59, imd:25.947, airq:0.24903, commfac:34.1},
+  {n:"Enfield",             pop:327434, crime:458,  earn:598.2, rent:1125, ls:7.41, hap:7.41, gcse:46.9, pass5:48.3, outstand:4.8,  greensp:0.425, lifeexp:63.2, sport:0.922, traffic:1786.1, nightsafe:0.56, imd:29.888, airq:0.24951, commfac:30.2},
+  {n:"Greenwich",           pop:299528, crime:736,  earn:719.4, rent:1475, ls:7.48, hap:7.42, gcse:46.5, pass5:49.3, outstand:18.8, greensp:0.398, lifeexp:63.6, sport:0.941, traffic:1214.8, nightsafe:0.62, imd:23.539, airq:0.24931, commfac:39.1},
+  {n:"Hackney",             pop:266758, crime:1789, earn:667.7, rent:1620, ls:7.14, hap:7.05, gcse:51.2, pass5:53.5, outstand:18.8, greensp:0.408, lifeexp:60.9, sport:0.923, traffic:441.0,  nightsafe:0.67, imd:31.795, airq:0.24906, commfac:36.5},
+  {n:"Hammersmith & Fulham",pop:188687, crime:990,  earn:790.1, rent:1600, ls:7.51, hap:7.66, gcse:55.9, pass5:64.4, outstand:33.3, greensp:0.303, lifeexp:64.4, sport:0.950, traffic:484.7,  nightsafe:0.71, imd:21.202, airq:0.24730, commfac:33.3},
+  {n:"Haringey",            pop:263850, crime:795,  earn:668.4, rent:1400, ls:6.97, hap:7.17, gcse:48.1, pass5:49.6, outstand:25.0, greensp:0.453, lifeexp:63.8, sport:0.938, traffic:517.3,  nightsafe:0.56, imd:30.856, airq:0.24959, commfac:31.6},
+  {n:"Harrow",              pop:270724, crime:566,  earn:625.2, rent:1175, ls:7.55, hap:7.60, gcse:52.2, pass5:56.7, outstand:15.4, greensp:0.503, lifeexp:62.9, sport:0.965, traffic:654.2,  nightsafe:0.56, imd:17.527, airq:0.24997, commfac:28.1},
+  {n:"Havering",            pop:276274, crime:208,  earn:670.7, rent:1000, ls:7.47, hap:7.54, gcse:48.8, pass5:52.2, outstand:11.1, greensp:0.495, lifeexp:64.2, sport:0.929, traffic:1818.6, nightsafe:0.68, imd:16.755, airq:0.24996, commfac:39.2},
+  {n:"Hillingdon",          pop:329185, crime:429,  earn:677.5, rent:1100, ls:7.56, hap:7.69, gcse:49.3, pass5:53.3, outstand:9.1,  greensp:0.430, lifeexp:64.2, sport:0.877, traffic:2357.7, nightsafe:0.59, imd:20.653, airq:0.24979, commfac:37.6},
+  {n:"Hounslow",            pop:299424, crime:687,  earn:637.9, rent:1350, ls:7.62, hap:7.49, gcse:50.1, pass5:55.0, outstand:23.8, greensp:0.395, lifeexp:62.3, sport:0.889, traffic:1657.0, nightsafe:0.58, imd:24.859, airq:0.24898, commfac:33.5},
+  {n:"Islington",           pop:223024, crime:1379, earn:766.6, rent:1750, ls:7.25, hap:7.20, gcse:48.0, pass5:51.3, outstand:20.0, greensp:0.403, lifeexp:63.4, sport:0.949, traffic:362.4,  nightsafe:0.68, imd:26.651, airq:0.24792, commfac:35.8},
+  {n:"Kensington & Chelsea",pop:144518, crime:1416, earn:855.9, rent:2201, ls:7.24, hap:7.23, gcse:54.5, pass5:62.2, outstand:50.0, greensp:0.347, lifeexp:68.7, sport:0.945, traffic:498.1,  nightsafe:0.76, imd:20.339, airq:0.24445, commfac:30.5},
+  {n:"Kingston upon Thames",pop:172692, crime:546,  earn:684.3, rent:1250, ls:7.58, hap:7.25, gcse:59.1, pass5:70.4, outstand:36.4, greensp:0.436, lifeexp:69.5, sport:0.948, traffic:959.9,  nightsafe:0.78, imd:11.063, airq:0.24981, commfac:36.4},
+  {n:"Lambeth",             pop:316920, crime:1426, earn:774.1, rent:1550, ls:7.63, hap:7.50, gcse:45.2, pass5:43.8, outstand:18.8, greensp:0.356, lifeexp:60.2, sport:0.955, traffic:728.8,  nightsafe:0.65, imd:23.041, airq:0.24912, commfac:29.5},
+  {n:"Lewisham",            pop:301255, crime:801,  earn:662.3, rent:1250, ls:7.48, hap:7.27, gcse:45.9, pass5:45.6, outstand:7.1,  greensp:0.396, lifeexp:63.9, sport:0.942, traffic:721.1,  nightsafe:0.63, imd:25.472, airq:0.24972, commfac:35.5},
+  {n:"Merton",              pop:218539, crime:450,  earn:745.3, rent:1350, ls:7.47, hap:7.39, gcse:51.7, pass5:55.1, outstand:55.6, greensp:0.455, lifeexp:66.9, sport:0.922, traffic:650.8,  nightsafe:0.66, imd:14.384, airq:0.24993, commfac:40.9},
+  {n:"Newham",              pop:374523, crime:1077, earn:633.9, rent:1420, ls:7.91, hap:8.00, gcse:51.1, pass5:56.4, outstand:19.0, greensp:0.346, lifeexp:62.0, sport:0.900, traffic:958.6,  nightsafe:0.54, imd:31.583, airq:0.24864, commfac:21.0},
+  {n:"Redbridge",           pop:321231, crime:390,  earn:632.7, rent:1125, ls:7.59, hap:7.63, gcse:55.2, pass5:64.5, outstand:15.8, greensp:0.449, lifeexp:62.3, sport:0.909, traffic:1157.1, nightsafe:0.63, imd:19.854, airq:0.24956, commfac:33.2},
+  {n:"Richmond upon Thames",pop:196678, crime:249,  earn:749.5, rent:1275, ls:7.33, hap:7.21, gcse:56.4, pass5:66.6, outstand:27.3, greensp:0.501, lifeexp:69.6, sport:0.972, traffic:817.1,  nightsafe:0.86, imd:9.532,  airq:0.24995, commfac:47.6},
+  {n:"Southwark",           pop:314786, crime:1927, earn:731.5, rent:1500, ls:7.23, hap:7.12, gcse:51.9, pass5:56.1, outstand:25.0, greensp:0.382, lifeexp:62.7, sport:0.951, traffic:692.4,  nightsafe:0.63, imd:23.328, airq:0.24908, commfac:39.9},
+  {n:"Sutton",              pop:214525, crime:493,  earn:635.1, rent:975,  ls:7.46, hap:7.41, gcse:59.1, pass5:68.0, outstand:21.4, greensp:0.425, lifeexp:67.4, sport:0.928, traffic:743.2,  nightsafe:0.71, imd:13.850, airq:0.24996, commfac:36.5},
+  {n:"Tower Hamlets",       pop:331886, crime:1291, earn:785.8, rent:1650, ls:7.32, hap:6.87, gcse:48.3, pass5:51.6, outstand:16.7, greensp:0.305, lifeexp:61.6, sport:0.904, traffic:837.0,  nightsafe:0.57, imd:30.554, airq:0.24628, commfac:25.6},
+  {n:"Waltham Forest",      pop:279737, crime:758,  earn:683.5, rent:1200, ls:7.16, hap:6.82, gcse:45.7, pass5:45.2, outstand:5.9,  greensp:0.456, lifeexp:65.6, sport:0.924, traffic:802.1,  nightsafe:0.62, imd:23.453, airq:0.24901, commfac:29.0},
+  {n:"Wandsworth",          pop:337655, crime:601,  earn:844.7, rent:1575, ls:7.45, hap:7.35, gcse:52.1, pass5:59.1, outstand:27.3, greensp:0.385, lifeexp:65.8, sport:0.977, traffic:736.0,  nightsafe:0.71, imd:15.157, airq:0.24962, commfac:28.4},
+  {n:"Westminster",         pop:209996, crime:2993, earn:767.5, rent:2275, ls:7.00, hap:7.01, gcse:53.8, pass5:61.3, outstand:27.3, greensp:0.317, lifeexp:65.8, sport:0.966, traffic:729.5,  nightsafe:0.67, imd:23.931, airq:0.24262, commfac:46.3},
+];
+DATA.forEach(d=>{
+  d.cpc=+(d.crime/d.pop*1000).toFixed(2);
+  d.tpc=+(d.traffic*1e6/d.pop).toFixed(0);
+  d.eco=d.earn&&d.rent?+(d.earn*4.33/d.rent).toFixed(3):null; // monthly wages / monthly rent (affordability, higher=better)
+});
+
+// ---- LIFE INDEX (10 metrics) ----
+function normalize(arr,invert=false){
+  const vals=arr.filter(v=>v!=null);
+  const mn=Math.min(...vals),mx=Math.max(...vals);
+  if(mx===mn)return arr.map(v=>v==null?null:50);
+  return arr.map(v=>v==null?null:invert?(1-(v-mn)/(mx-mn))*100:((v-mn)/(mx-mn))*100);
+}
+function computeIndex(){
+  const hap=normalize(DATA.map(d=>d.hap));
+  const earn=normalize(DATA.map(d=>d.earn));
+  const crime=normalize(DATA.map(d=>d.cpc),true);
+  const gcse=normalize(DATA.map(d=>d.gcse));
+  const rent=normalize(DATA.map(d=>d.rent),true);
+  const life=normalize(DATA.map(d=>d.lifeexp));
+  const green=normalize(DATA.map(d=>d.greensp));
+  const imd=normalize(DATA.map(d=>d.imd),true);
+  const traf=normalize(DATA.map(d=>d.tpc),true);
+  const air=normalize(DATA.map(d=>d.airq));
+  const eco=normalize(DATA.map(d=>d.eco));
+  const commfac=normalize(DATA.map(d=>d.commfac));
+  // Weights: En Yüksek=3 (suç,eğitim), Yüksek=2 (trafik,sağ.yaşam,yeşil alan,toplum imk.), Orta=1.5 (yoksunluk,mutluluk,ekonomi,kira,hava), Düşük=1 (maaş)
+  DATA.forEach((d,i)=>{
+    const items=[
+      {v:crime[i],w:3},{v:gcse[i],w:3},
+      {v:traf[i],w:2},{v:life[i],w:2},{v:green[i],w:2},{v:commfac[i],w:2},
+      {v:imd[i],w:1.5},{v:hap[i],w:1.5},{v:eco[i],w:1.5},{v:rent[i],w:1.5},{v:air[i],w:1.5},
+      {v:earn[i],w:1}
+    ].filter(x=>x.v!=null);
+    const wsum=items.reduce((a,x)=>a+x.w,0);
+    d.liIndex=wsum?+(items.reduce((a,x)=>a+x.v*x.w,0)/wsum).toFixed(1):null;
+  });
+}
+computeIndex();
+
+// ---- COLOR HELPERS ----
+function cscale(v,mn,mx,lo,hi){
+  const t=Math.max(0,Math.min(1,(v-mn)/(mx-mn)));
+  return `rgba(${Math.round(lo[0]+(hi[0]-lo[0])*t)},${Math.round(lo[1]+(hi[1]-lo[1])*t)},${Math.round(lo[2]+(hi[2]-lo[2])*t)},0.85)`;
+}
+const palettes=[[79,142,247],[247,79,106],[79,247,168],[247,196,79],[191,79,247],[247,148,79],[79,247,240]];
+function pal(i){const c=palettes[i%palettes.length];return `rgba(${c[0]},${c[1]},${c[2]},0.85)`}
+
+// ---- CHART FACTORIES ----
+function hbar(id,labels,data,colors,opts={}){
+  const c=document.getElementById(id);if(!c)return;
+  return new Chart(c,{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,barThickness:opts.thick||12}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},datalabels:{display:false},
+        tooltip:{callbacks:{label:ctx=>` ${opts.fmt?opts.fmt(ctx.parsed.x):ctx.parsed.x}`}}},
+      scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:10}},...(opts.xextra||{})},
+              y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:10}}}}}
+  });
+}
+function vbar(id,labels,datasets,opts={}){
+  const c=document.getElementById(id);if(!c)return;
+  return new Chart(c,{
+    type:'bar',
+    data:{labels,datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:opts.legend||false},datalabels:{display:false},
+        tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y}`}}},
+      scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{font:{size:9}}},
+              y:{grid:{color:'rgba(255,255,255,.04)'},...(opts.yextra||{})}}}
+  });
+}
+function scatter(id,datasets,xl,yl){
+  const c=document.getElementById(id);if(!c)return;
+  return new Chart(c,{
+    type:'scatter',
+    data:{datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{display:false},
+        tooltip:{callbacks:{label:ctx=>`${ctx.raw.label}: (${ctx.raw.x}, ${ctx.raw.y})`}}},
+      scales:{x:{title:{display:true,text:xl,color:'#7a7d8c'},grid:{color:'rgba(255,255,255,.04)'}},
+              y:{title:{display:true,text:yl,color:'#7a7d8c'},grid:{color:'rgba(255,255,255,.04)'}}}}
+  });
+}
+function sn(s,max=14){return s.length>max?s.slice(0,max)+'…':s}
+
+// ---- INIT OVERVIEW ----
+function initOverview(){
+  const hSort=[...DATA].sort((a,b)=>b.crime-a.crime).slice(0,15);
+  hbar('cCrimeHigh',hSort.map(d=>sn(d.n)),hSort.map(d=>d.crime),hSort.map(d=>cscale(d.crime,200,3000,[79,247,168],[247,79,106])));
+  const lSort=[...DATA].sort((a,b)=>a.crime-b.crime).slice(0,15);
+  hbar('cCrimeLow',lSort.map(d=>sn(d.n)),lSort.map(d=>d.crime),lSort.map(d=>cscale(d.crime,200,3000,[79,247,168],[247,79,106])));
+  const eSort=[...DATA].filter(d=>d.earn).sort((a,b)=>b.earn-a.earn).slice(0,10);
+  hbar('cEarnTop',eSort.map(d=>sn(d.n)),eSort.map(d=>d.earn),eSort.map(d=>cscale(d.earn,550,900,[79,142,247],[247,196,79])),{fmt:v=>`£${v}`});
+  const hapSort=[...DATA].filter(d=>d.hap).sort((a,b)=>b.hap-a.hap).slice(0,10);
+  hbar('cHapTop',hapSort.map(d=>sn(d.n)),hapSort.map(d=>d.hap),hapSort.map(d=>cscale(d.hap,6.7,8.1,[247,79,106],[79,247,168])));
+  const lifeSort=[...DATA].filter(d=>d.lifeexp).sort((a,b)=>b.lifeexp-a.lifeexp).slice(0,10);
+  hbar('cLifeTop',lifeSort.map(d=>sn(d.n)),lifeSort.map(d=>d.lifeexp),lifeSort.map(d=>cscale(d.lifeexp,59,70,[247,79,106],[79,247,240])),{fmt:v=>`${v} yıl`});
+}
+
+// ---- LIFE INDEX TAB ----
+function initIndex(){
+  const sorted=[...DATA].filter(d=>d.liIndex!=null).sort((a,b)=>b.liIndex-a.liIndex);
+  const cards=document.getElementById('liCards');
+  cards.innerHTML='';
+  const medals=['🥇','🥈','🥉'];
+  sorted.slice(0,10).forEach((d,i)=>{
+    const medal=i<3?medals[i]:`#${i+1}`;
+    cards.innerHTML+=`<div class="li-card">
+      <div class="li-rank">${medal} Sıra</div>
+      <div class="li-name">${d.n}</div>
+      <div class="li-score" style="color:${i===0?'#f7c44f':i===1?'#c0c0c0':i===2?'#cd7f32':'#4f8ef7'}">${d.liIndex}</div>
+      <div class="li-bars">Mutluluk: ${d.hap||'—'} · Maaş: £${d.earn||'—'} · Kira: £${d.rent} · Yaşam: ${d.lifeexp||'—'}y</div>
+    </div>`;
+  });
+  hbar('cLiAll',sorted.map(d=>sn(d.n)),sorted.map(d=>d.liIndex),sorted.map(d=>cscale(d.liIndex,0,100,[247,79,106],[79,247,168])),{thick:14,fmt:v=>`${v} puan`});
+  // ---- Ranking table ----
+  const tbl=document.getElementById('liRankTable');
+  let th=`<table><thead><tr>
+    <th>#</th><th>Borough</th><th>Puan</th><th>Suç/1k</th><th>Kira £</th><th>Maaş £</th><th>GCSE</th><th>Yaşam y</th><th>Trafik/k</th><th>IMD</th><th>Hava</th><th>Ekonomi</th><th>Mutluluk</th>
+  </tr></thead><tbody>`;
+  sorted.forEach((d,i)=>{
+    const medal=i<3?medals[i]:`${i+1}`;
+    const scoreColor=d.liIndex>=70?'#4ff7a8':d.liIndex>=55?'#f7c44f':'#f74f6a';
+    th+=`<tr>
+      <td style="text-align:center;font-size:13px">${medal}</td>
+      <td>${d.n}</td>
+      <td style="font-weight:700;color:${scoreColor}">${d.liIndex??'—'}</td>
+      <td>${d.cpc}</td>
+      <td>£${d.rent}</td>
+      <td>£${d.earn??'—'}</td>
+      <td>${d.gcse??'—'}</td>
+      <td>${d.lifeexp??'—'}</td>
+      <td>${d.tpc!=null?d.tpc.toLocaleString():'—'}</td>
+      <td>${d.imd!=null?d.imd.toFixed(1):'—'}</td>
+      <td>${d.airq!=null?d.airq.toFixed(4):'—'}</td>
+      <td>${d.eco!=null?d.eco.toFixed(2):'—'}</td>
+      <td>${d.hap??'—'}</td>
+    </tr>`;
+  });
+  th+=`</tbody></table>`;
+  tbl.innerHTML=th;
+  const top5=sorted.slice(0,5);
+  const radarLabels=['Mutluluk','Maaş','Düşük Suç','Eğitim','Düşük Kira','Sağ.Yaşam','Yeşil Alan','Düşük Trafik','Hava','Düşük Yoksunluk','Ekonomi'];
+  const hapN=normalize(DATA.map(d=>d.hap));
+  const earnN=normalize(DATA.map(d=>d.earn));
+  const crimeN=normalize(DATA.map(d=>d.cpc),true);
+  const gcseN=normalize(DATA.map(d=>d.gcse));
+  const rentN=normalize(DATA.map(d=>d.rent),true);
+  const lifeN=normalize(DATA.map(d=>d.lifeexp));
+  const greenN=normalize(DATA.map(d=>d.greensp));
+  const imdN=normalize(DATA.map(d=>d.imd),true);
+  const trafN=normalize(DATA.map(d=>d.tpc),true);
+  const airN=normalize(DATA.map(d=>d.airq));
+  const ecoN=normalize(DATA.map(d=>d.eco));
+  const radarColors=['rgba(247,196,79,.7)','rgba(79,247,168,.7)','rgba(79,142,247,.7)','rgba(191,79,247,.7)','rgba(247,79,106,.7)'];
+  new Chart(document.getElementById('cLiRadar'),{
+    type:'radar',
+    data:{
+      labels:radarLabels,
+      datasets:top5.map((d,i)=>{
+        const idx=DATA.indexOf(d);
+        return{label:d.n,data:[hapN[idx],earnN[idx],crimeN[idx],gcseN[idx],rentN[idx],lifeN[idx]||0,greenN[idx]||0,trafN[idx]||0,airN[idx]||0,imdN[idx]||0,ecoN[idx]||0].map(v=>v==null?0:+v.toFixed(1)),
+          backgroundColor:radarColors[i].replace('.7','.15'),borderColor:radarColors[i],borderWidth:2,pointRadius:4};
+      })
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom'},datalabels:{display:false}},
+      scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:9}},grid:{color:'rgba(255,255,255,.08)'},pointLabels:{font:{size:10}}}}}
+  });
+}
+
+// ---- CHOROPLETH MAP ----
+let liMap=null;
+function normBoroughName(s){
+  return s.toLowerCase().replace(/ and /g,' & ').trim();
+}
+function liColor(score){
+  if(score==null)return'#2a2d3a';
+  const mn=30,mx=85,t=Math.max(0,Math.min(1,(score-mn)/(mx-mn)));
+  // red(247,79,106) → yellow(247,196,79) → green(79,247,168)
+  if(t<0.5){
+    const u=t*2;
+    return`rgb(${Math.round(247)},${Math.round(79+(196-79)*u)},${Math.round(106+(79-106)*u)})`;
+  } else {
+    const u=(t-0.5)*2;
+    return`rgb(${Math.round(247+(79-247)*u)},${Math.round(196+(247-196)*u)},${Math.round(79+(168-79)*u)})`;
+  }
+}
+function initMap(){
+  if(liMap){liMap.invalidateSize();return;}
+  liMap=L.map('liMap',{zoomControl:true,attributionControl:false,scrollWheelZoom:false}).setView([51.505,-0.09],10);
+
+  // Dark tile layer
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+    maxZoom:19,subdomains:'abcd'
+  }).addTo(liMap);
+
+  // Build lookup: normalized name → liIndex + data
+  const lookup={};
+  DATA.forEach(d=>{lookup[normBoroughName(d.n)]=d;});
+
+  fetch('https://raw.githubusercontent.com/radoi90/housequest-data/master/london_boroughs.geojson')
+    .then(r=>r.json())
+    .then(gj=>{
+      const layer=L.geoJSON(gj,{
+        style:feat=>{
+          const key=normBoroughName(feat.properties.name||'');
+          const d=lookup[key];
+          const score=d?d.liIndex:null;
+          return{fillColor:liColor(score),fillOpacity:0.82,color:'#0f1117',weight:1.5};
+        },
+        onEachFeature:(feat,layer)=>{
+          const key=normBoroughName(feat.properties.name||'');
+          const d=lookup[key];
+          layer.on({
+            mouseover(e){
+              e.target.setStyle({fillOpacity:1,weight:2.5,color:'#fff'});
+              const score=d?d.liIndex:'—';
+              const rank=d&&d.liIndex?[...DATA].filter(x=>x.liIndex!=null).sort((a,b)=>b.liIndex-a.liIndex).findIndex(x=>x.n===d.n)+1:'—';
+              layer.bindTooltip(`<b>${feat.properties.name}</b><br>Yaşam Endeksi: <b style="color:${liColor(d?.liIndex)}">${score}</b><br>Sıra: #${rank}<br>Mutluluk: ${d?.hap||'—'} · Maaş: £${d?.earn||'—'}<br>Suç/1k: ${d?.cpc||'—'} · Kira: £${d?.rent||'—'}`,
+                {className:'li-tooltip',sticky:true}).openTooltip();
+            },
+            mouseout(e){
+              layer.setStyle({fillOpacity:0.82,weight:1.5,color:'#0f1117'});
+              layer.closeTooltip();
+            }
+          });
+        }
+      }).addTo(liMap);
+      liMap.fitBounds(layer.getBounds(),{padding:[10,10]});
+
+      // Legend
+      const legend=L.control({position:'bottomright'});
+      legend.onAdd=()=>{
+        const div=L.DomUtil.create('div','map-legend');
+        div.innerHTML='<b>Yaşam Endeksi</b><div class="grad"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#7a7d8c"><span>Düşük</span><span>Yüksek</span></div>';
+        return div;
+      };
+      legend.addTo(liMap);
+    });
+}
+
+// ---- CRIME TAB ----
+function initCrime(){
+  const s=[...DATA].sort((a,b)=>b.crime-a.crime);
+  hbar('cCrimeAll',s.map(d=>sn(d.n)),s.map(d=>d.crime),s.map(d=>cscale(d.crime,200,3000,[79,247,168],[247,79,106])),{thick:14});
+  const s2=[...DATA].sort((a,b)=>b.cpc-a.cpc);
+  hbar('cCrimePc',s2.map(d=>sn(d.n)),s2.map(d=>d.cpc),s2.map(d=>cscale(d.cpc,.5,16,[79,247,168],[247,79,106])),{thick:10});
+  scatter('cCrimeRent',
+    [{data:DATA.map(d=>({x:d.crime,y:d.rent,label:d.n})),backgroundColor:'rgba(247,148,79,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Suç Sayısı','Medyan Aylık Kira (£)');
+  scatter('cCrimeHap',
+    [{data:DATA.filter(d=>d.hap).map(d=>({x:d.crime,y:d.hap,label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Suç Sayısı','Mutluluk Skoru (0-10)');
+  scatter('cCrimePcHap',
+    [{data:DATA.filter(d=>d.hap).map(d=>({x:d.cpc,y:d.hap,label:d.n})),backgroundColor:'rgba(191,79,247,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Suç / 1000 Kişi','Mutluluk Skoru (0-10)');
+}
+
+// ---- ECONOMY TAB ----
+function initEconomy(){
+  const s=[...DATA].filter(d=>d.earn).sort((a,b)=>b.earn-a.earn);
+  hbar('cEarnAll',s.map(d=>sn(d.n)),s.map(d=>d.earn),s.map(d=>cscale(d.earn,550,900,[79,142,247],[247,196,79])),{thick:14,fmt:v=>`£${v}`});
+  scatter('cEarnRent',
+    [{data:DATA.filter(d=>d.earn).map(d=>({x:d.earn,y:d.rent,label:d.n})),backgroundColor:'rgba(247,196,79,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Medyan Maaş (£/hft)','Medyan Kira (£/ay)');
+  scatter('cEarnGcse',
+    [{data:DATA.filter(d=>d.earn&&d.gcse).map(d=>({x:d.earn,y:d.gcse,label:d.n})),backgroundColor:'rgba(191,79,247,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Medyan Maaş (£/hft)','GCSE Attainment 8 Puanı');
+}
+
+// ---- WELLBEING TAB ----
+function initWellbeing(){
+  const sl=[...DATA].filter(d=>d.ls).sort((a,b)=>b.ls-a.ls);
+  hbar('cLsAll',sl.map(d=>sn(d.n)),sl.map(d=>d.ls),sl.map(d=>cscale(d.ls,6.8,8.0,[247,79,106],[79,247,168])),{thick:12,xextra:{min:6.5}});
+  const sh=[...DATA].filter(d=>d.hap).sort((a,b)=>b.hap-a.hap);
+  hbar('cHapAll',sh.map(d=>sn(d.n)),sh.map(d=>d.hap),sh.map(d=>cscale(d.hap,6.7,8.1,[247,79,106],[79,247,168])),{thick:12,xextra:{min:6.5}});
+  const comb=[...DATA].filter(d=>d.ls).sort((a,b)=>b.ls-a.ls);
+  vbar('cWbComp',comb.map(d=>sn(d.n,10)),
+    [{label:'Yaşam Memnuniyeti',data:comb.map(d=>d.ls),backgroundColor:'rgba(79,142,247,.75)',borderRadius:[4,4,0,0]},
+     {label:'Mutluluk',data:comb.map(d=>d.hap),backgroundColor:'rgba(79,247,168,.75)',borderRadius:[4,4,0,0]}],
+    {legend:true,yextra:{min:6.5}});
+}
+
+// ---- EDUCATION TAB ----
+function initEducation(){
+  const s=[...DATA].filter(d=>d.gcse).sort((a,b)=>b.gcse-a.gcse);
+  hbar('cGcseAll',s.map(d=>sn(d.n)),s.map(d=>d.gcse),s.map(d=>cscale(d.gcse,44,60,[247,79,106],[79,247,168])),{thick:14});
+  const s2=[...DATA].filter(d=>d.pass5!=null).sort((a,b)=>b.pass5-a.pass5);
+  hbar('cGcsePc',s2.map(d=>sn(d.n)),s2.map(d=>d.pass5),s2.map(d=>cscale(d.pass5,43,71,[247,79,106],[79,247,168])),{thick:12,fmt:v=>`${v}%`});
+  scatter('cGcseHap',
+    [{data:DATA.filter(d=>d.gcse&&d.hap).map(d=>({x:d.gcse,y:d.hap,label:d.n})),backgroundColor:'rgba(191,79,247,.75)',pointRadius:6,pointHoverRadius:9}],
+    'GCSE Attainment 8','Mutluluk Skoru');
+  const os=[...DATA].filter(d=>d.outstand!=null).sort((a,b)=>b.outstand-a.outstand);
+  hbar('cOutstandAll',os.map(d=>sn(d.n)),os.map(d=>d.outstand),os.map(d=>cscale(d.outstand,0,70,[247,79,106],[79,247,240])),{thick:12,fmt:v=>`${v}%`});
+  scatter('cOutstandHap',
+    [{data:DATA.filter(d=>d.outstand!=null&&d.hap).map(d=>({x:d.outstand,y:d.hap,label:d.n})),backgroundColor:'rgba(79,247,240,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Outstanding Okul Oranı (%)','Mutluluk Skoru');
+}
+
+// ---- HOUSING TAB ----
+function initHousing(){
+  const s=[...DATA].sort((a,b)=>b.rent-a.rent);
+  hbar('cRentAll',s.map(d=>sn(d.n)),s.map(d=>d.rent),s.map(d=>cscale(d.rent,975,2275,[79,247,168],[247,79,106])),{thick:14,fmt:v=>`£${v}`});
+  scatter('cRentHap',
+    [{data:DATA.filter(d=>d.hap).map(d=>({x:d.rent,y:d.hap,label:d.n})),backgroundColor:'rgba(247,148,79,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Medyan Aylık Kira (£)','Mutluluk Skoru');
+  const ratio=[...DATA].filter(d=>d.earn).sort((a,b)=>{
+    const ra=d=>(d.rent/(d.earn*4.33))*100;return rb(b)-rb(a);function rb(x){return(x.rent/(x.earn*4.33))*100}
+  });
+  hbar('cRentRatio',ratio.map(d=>sn(d.n)),
+    ratio.map(d=>+((d.rent/(d.earn*4.33))*100).toFixed(1)),
+    ratio.map(d=>cscale((d.rent/(d.earn*4.33))*100,30,80,[79,247,168],[247,79,106])),
+    {thick:12,fmt:v=>`${v}%`});
+}
+
+// ---- ENVIRONMENT TAB ----
+function initEnvironment(){
+  const sg=[...DATA].filter(d=>d.greensp!=null).sort((a,b)=>b.greensp-a.greensp);
+  hbar('cGreenAll',sg.map(d=>sn(d.n)),sg.map(d=>+(d.greensp*100).toFixed(1)),sg.map(d=>cscale(d.greensp,0.07,0.52,[247,79,106],[79,247,168])),{thick:12,fmt:v=>`${v}%`});
+  const sl=[...DATA].filter(d=>d.lifeexp).sort((a,b)=>b.lifeexp-a.lifeexp);
+  hbar('cLifeAll',sl.map(d=>sn(d.n)),sl.map(d=>d.lifeexp),sl.map(d=>cscale(d.lifeexp,59,70,[247,79,106],[79,247,240])),{thick:12,fmt:v=>`${v} yıl`});
+  const ss=[...DATA].filter(d=>d.sport!=null).sort((a,b)=>b.sport-a.sport);
+  hbar('cSportAll',ss.map(d=>sn(d.n)),ss.map(d=>+(d.sport*100).toFixed(1)),ss.map(d=>cscale(d.sport,0.86,0.98,[247,196,79],[79,247,168])),{thick:12,fmt:v=>`${v}%`});
+  scatter('cGreenLife',
+    [{data:DATA.filter(d=>d.greensp!=null&&d.lifeexp).map(d=>({x:+(d.greensp*100).toFixed(1),y:d.lifeexp,label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Yeşil Alan (%)','Sağlıklı Yaşam Süresi (yıl)');
+  scatter('cLifeHap',
+    [{data:DATA.filter(d=>d.lifeexp&&d.hap).map(d=>({x:d.lifeexp,y:d.hap,label:d.n})),backgroundColor:'rgba(79,247,240,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Sağlıklı Yaşam Süresi (yıl)','Mutluluk Skoru');
+  scatter('cGreenHap',
+    [{data:DATA.filter(d=>d.greensp!=null&&d.hap).map(d=>({x:+(d.greensp*100).toFixed(1),y:d.hap,label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Yeşil Alan (%)','Mutluluk Skoru');
+  const sn2=[...DATA].filter(d=>d.nightsafe!=null).sort((a,b)=>b.nightsafe-a.nightsafe);
+  hbar('cNightAll',sn2.map(d=>sn(d.n)),sn2.map(d=>+(d.nightsafe*100).toFixed(1)),sn2.map(d=>cscale(d.nightsafe,0.5,0.9,[247,79,106],[79,247,168])),{thick:12,fmt:v=>`${v}%`});
+  scatter('cNightCrime',
+    [{data:DATA.filter(d=>d.nightsafe!=null).map(d=>({x:d.cpc,y:+(d.nightsafe*100).toFixed(1),label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Suç / 1000 Kişi','Gece Güvenliği (%)');
+}
+
+// ---- TRAFFIC TAB ----
+function initTraffic(){
+  const st=[...DATA].sort((a,b)=>b.traffic-a.traffic);
+  hbar('cTrafficAll',st.map(d=>sn(d.n)),st.map(d=>d.traffic),st.map(d=>cscale(d.traffic,100,2400,[79,247,168],[247,79,106])),{thick:14,fmt:v=>`${v} MvKm`});
+  const st2=[...DATA].sort((a,b)=>b.tpc-a.tpc);
+  hbar('cTrafficPc',st2.map(d=>sn(d.n)),st2.map(d=>d.tpc),st2.map(d=>cscale(d.tpc,1000,8000,[79,247,168],[247,79,106])),{thick:12,fmt:v=>`${v.toLocaleString()} km/kişi`});
+  scatter('cTrafficHap',
+    [{data:DATA.filter(d=>d.hap).map(d=>({x:d.tpc,y:d.hap,label:d.n})),backgroundColor:'rgba(247,148,79,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Araç Km / Kişi (2024)','Mutluluk Skoru');
+  scatter('cTrafficRent',
+    [{data:DATA.map(d=>({x:d.tpc,y:d.rent,label:d.n})),backgroundColor:'rgba(191,79,247,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Araç Km / Kişi (2024)','Medyan Aylık Kira (£)');
+  scatter('cTrafficAir',
+    [{data:DATA.filter(d=>d.greensp!=null).map(d=>({x:d.tpc,y:+(d.greensp*100).toFixed(1),label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],
+    'Araç Km / Kişi (2024)','Yeşil Alan Oranı (%)');
+}
+
+// ---- POPULATION TAB ----
+function initPopulation(){
+  const s=[...DATA].sort((a,b)=>b.pop-a.pop);
+  hbar('cPopAll',s.map(d=>sn(d.n)),s.map(d=>d.pop),s.map(d=>cscale(d.pop,15000,410000,[79,142,247],[191,79,247])),{thick:14,fmt:v=>`${(v/1000).toFixed(0)}k`});
+  const t10=[...DATA].sort((a,b)=>b.pop-a.pop).slice(0,10);
+  hbar('cPopTop',t10.map(d=>sn(d.n)),t10.map(d=>d.pop),'rgba(191,79,247,.75)');
+  const colors=['#4f8ef7','#f74f6a','#4ff7a8','#f7c44f','#bf4ff7','#f7944f','#4ff7f0','#f74fc4','#8c4ff7','#f77c4f','#4fc44f','#c44ff7','#4f4ff7','#f7f74f','#4ff78c','#f78c4f','#7c4ff7','#c4f74f','#f74f7c','#4f7cf7','#7cf74f','#f7f77c','#c4f7c4','#f7c4f7','#c4c4f7','#f7c4c4','#4fc4c4','#c44f4f','#4fc44f','#c4c44f','#7f7ff7','#f77f7f','#7ff77f'];
+  const donutData=[...DATA].sort((a,b)=>b.pop-a.pop);
+  new Chart(document.getElementById('cPopDonut'),{
+    type:'doughnut',
+    data:{labels:donutData.map(d=>d.n),datasets:[{data:donutData.map(d=>d.pop),backgroundColor:colors,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{display:false},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${(ctx.raw/1000).toFixed(0)}k`}}}}
+  });
+}
+
+// ---- DEPRIVATION TAB ----
+function initDeprivation(){
+  const s=[...DATA].sort((a,b)=>b.imd-a.imd);
+  hbar('cImdAll',s.map(d=>sn(d.n)),s.map(d=>d.imd),s.map(d=>cscale(d.imd,9,32,[79,247,168],[247,79,106])),{thick:14,fmt:v=>`${v} puan`});
+  scatter('cImdEarn',
+    [{data:DATA.filter(d=>d.earn).map(d=>({x:d.imd,y:d.earn,label:d.n})),backgroundColor:'rgba(247,196,79,.75)',pointRadius:6,pointHoverRadius:9}],
+    'IMD Puanı (2025)','Medyan Maaş (£/hft)');
+  scatter('cImdHap',
+    [{data:DATA.filter(d=>d.hap).map(d=>({x:d.imd,y:d.hap,label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],
+    'IMD Puanı (2025)','Mutluluk Skoru');
+  scatter('cImdCrime',
+    [{data:DATA.map(d=>({x:d.imd,y:d.cpc,label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],
+    'IMD Puanı (2025)','Suç / 1000 Kişi');
+  scatter('cImdGreen',
+    [{data:DATA.filter(d=>d.greensp!=null).map(d=>({x:d.imd,y:+(d.greensp*100).toFixed(1),label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],
+    'IMD Puanı (2025)','Yeşil Alan Oranı (%)');
+}
+
+// ---- CORRELATIONS TAB ----
+function initCorrelations(){
+  const common=DATA.filter(d=>d.earn&&d.hap);
+  scatter('cCE1',[{data:common.map(d=>({x:d.earn,y:d.hap,label:d.n})),backgroundColor:'rgba(247,196,79,.75)',pointRadius:6,pointHoverRadius:9}],'Medyan Maaş (£/hft)','Mutluluk');
+  scatter('cCE2',[{data:DATA.filter(d=>d.hap).map(d=>({x:d.cpc,y:d.hap,label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],'Suç / 1000 Kişi','Mutluluk');
+  scatter('cCE3',[{data:DATA.filter(d=>d.hap).map(d=>({x:d.rent,y:d.hap,label:d.n})),backgroundColor:'rgba(247,148,79,.75)',pointRadius:6,pointHoverRadius:9}],'Medyan Kira (£/ay)','Mutluluk');
+  scatter('cCE4',[{data:DATA.filter(d=>d.gcse&&d.earn).map(d=>({x:d.gcse,y:d.earn,label:d.n})),backgroundColor:'rgba(191,79,247,.75)',pointRadius:6,pointHoverRadius:9}],'GCSE Attainment 8','Medyan Maaş (£/hft)');
+  scatter('cCE5',[{data:DATA.filter(d=>d.earn).map(d=>({x:d.earn,y:d.rent,label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],'Medyan Maaş (£/hft)','Medyan Kira (£/ay)');
+  scatter('cCE6',[{data:DATA.map(d=>({x:+(d.pop/1000).toFixed(0),y:d.crime,label:d.n})),backgroundColor:'rgba(79,142,247,.75)',pointRadius:6,pointHoverRadius:9}],'Nüfus (bin)','Suç Sayısı');
+  scatter('cCE7',[{data:DATA.filter(d=>d.outstand!=null&&d.hap).map(d=>({x:d.outstand,y:d.hap,label:d.n})),backgroundColor:'rgba(79,247,240,.75)',pointRadius:6,pointHoverRadius:9}],'Outstanding Okul (%)','Mutluluk');
+  scatter('cCE8',[{data:DATA.filter(d=>d.outstand!=null&&d.earn).map(d=>({x:d.outstand,y:d.earn,label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],'Outstanding Okul (%)','Medyan Maaş (£/hft)');
+  scatter('cCE9',[{data:DATA.filter(d=>d.lifeexp&&d.earn).map(d=>({x:d.earn,y:d.lifeexp,label:d.n})),backgroundColor:'rgba(247,196,79,.75)',pointRadius:6,pointHoverRadius:9}],'Medyan Maaş (£/hft)','Sağlıklı Yaşam Süresi (yıl)');
+  scatter('cCE10',[{data:DATA.filter(d=>d.hap).map(d=>({x:d.tpc,y:d.hap,label:d.n})),backgroundColor:'rgba(247,148,79,.75)',pointRadius:6,pointHoverRadius:9}],'Araç Km / Kişi','Mutluluk');
+  scatter('cCE11',[{data:DATA.map(d=>({x:d.tpc,y:d.cpc,label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],'Araç Km / Kişi','Suç / 1000 Kişi');
+  scatter('cCE12',[{data:DATA.map(d=>({x:d.tpc,y:d.rent,label:d.n})),backgroundColor:'rgba(191,79,247,.75)',pointRadius:6,pointHoverRadius:9}],'Araç Km / Kişi','Medyan Kira (£/ay)');
+  scatter('cCE13',[{data:DATA.filter(d=>d.hap).map(d=>({x:d.imd,y:d.hap,label:d.n})),backgroundColor:'rgba(79,247,168,.75)',pointRadius:6,pointHoverRadius:9}],'IMD Puanı (2025)','Mutluluk');
+  scatter('cCE14',[{data:DATA.filter(d=>d.earn).map(d=>({x:d.imd,y:d.earn,label:d.n})),backgroundColor:'rgba(247,196,79,.75)',pointRadius:6,pointHoverRadius:9}],'IMD Puanı (2025)','Medyan Maaş (£/hft)');
+  scatter('cCE15',[{data:DATA.map(d=>({x:d.imd,y:d.cpc,label:d.n})),backgroundColor:'rgba(247,79,106,.75)',pointRadius:6,pointHoverRadius:9}],'IMD Puanı (2025)','Suç / 1000 Kişi');
+}
+
+// ---- TABLE ----
+function buildTable(){
+  const tb=document.getElementById('tb');
+  const mxP=Math.max(...DATA.map(d=>d.pop));
+  const mxC=Math.max(...DATA.map(d=>d.crime));
+  const mxE=Math.max(...DATA.filter(d=>d.earn).map(d=>d.earn));
+  const mxR=Math.max(...DATA.map(d=>d.rent));
+  const mxL=Math.max(...DATA.filter(d=>d.liIndex!=null).map(d=>d.liIndex));
+  function bc(v,mx,c){
+    if(v==null)return`<td><span style="color:#444">—</span></td>`;
+    return`<td><div class="bc"><div class="bb"><div class="bf" style="width:${(v/mx*100).toFixed(1)}%;background:${c}"></div></div><span class="bv">${v}</span></div></td>`;
+  }
+  tb.innerHTML=[...DATA].sort((a,b)=>b.pop-a.pop).map(d=>`<tr>
+    <td>${d.n}</td>
+    ${bc((d.pop/1000).toFixed(0)+'k',mxP/1000,'#4f8ef7')}
+    ${bc(d.crime,mxC,'#f74f6a')}
+    ${bc(d.cpc,20,'#f7944f')}
+    ${bc(d.earn,mxE,'#f7c44f')}
+    ${bc(d.rent,mxR,'#f77c4f')}
+    ${bc(d.ls,10,'#4ff7a8')}
+    ${bc(d.hap,10,'#bf4ff7')}
+    ${bc(d.gcse,65,'#4ff7f0')}
+    ${bc(d.pass5,75,'#7cf74f')}
+    ${bc(d.outstand!=null?d.outstand+'%':null,100,'#4ff7f0')}
+    ${bc(d.greensp!=null?+(d.greensp*100).toFixed(1)+'%':null,100,'#4ff7a8')}
+    ${bc(d.lifeexp,75,'#4ff7f0')}
+    ${bc(d.sport!=null?+(d.sport*100).toFixed(1)+'%':null,100,'#4ff7a8')}
+    ${bc(d.imd,35,'#f74f6a')}
+    ${bc(d.liIndex,mxL,'#4f8ef7')}
+  </tr>`).join('');
+}
+
+// ---- TABS ----
+const inited=new Set();
+function sw(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ns=['overview','index','crime','economy','wellbeing','education','housing','environment','traffic','population','deprivation','correlations','table'];
+    t.className='tab'+(ns[i]===name?' active':'');
+  });
+  document.querySelectorAll('.tc').forEach(tc=>{
+    tc.className='tc'+(tc.id==='tab-'+name?' active':'');
+  });
+  if(!inited.has(name)){
+    inited.add(name);
+    const m={index:()=>{initIndex();initMap();},crime:initCrime,economy:initEconomy,wellbeing:initWellbeing,education:initEducation,housing:initHousing,environment:initEnvironment,traffic:initTraffic,population:initPopulation,deprivation:initDeprivation,correlations:initCorrelations};
+    if(m[name])m[name]();
+  }
+}
+
+// ---- SORT TABLE ----
+let sd={};
+function st(col){
+  sd[col]=!sd[col];
+  document.querySelectorAll('#dt thead th').forEach((h,i)=>{h.className=i===col?(sd[col]?'sd':'sa'):''});
+  const rows=Array.from(document.querySelectorAll('#tb tr'));
+  rows.sort((a,b)=>{
+    if(col===0)return sd[col]?a.cells[0].textContent.localeCompare(b.cells[0].textContent):b.cells[0].textContent.localeCompare(a.cells[0].textContent);
+    const av=parseFloat(a.cells[col].textContent.replace(/[^0-9.-]/g,'')||0);
+    const bv=parseFloat(b.cells[col].textContent.replace(/[^0-9.-]/g,'')||0);
+    return sd[col]?bv-av:av-bv;
+  });
+  const tb=document.getElementById('tb');
+  rows.forEach(r=>tb.appendChild(r));
+}
+
+// ---- BOOT ----
+inited.add('overview');initOverview();
+buildTable();inited.add('table');
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "standardId": "iso22301",
+  "generatedAt": "2026-03-23",
+  "controls": [
+    { "refNo": "ISO22301-4.1", "category": "Organizasyonun Bağlamı", "title": "Organizasyonun ve Bağlamının Anlaşılması", "description": "İş sürekliliğini etkileyen iç ve dış unsurları belirleyin.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["organizasyon bağlamı","iç unsur","dış unsur","paydaş"] },
+    { "refNo": "ISO22301-5.1", "category": "Liderlik", "title": "Üst Yönetim Liderliği", "description": "Üst yönetim BCMS'ye (İş Sürekliliği Yönetim Sistemi) liderlik ve bağlılık göstermektedir.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["üst yönetim","liderlik","BCMS","taahhüt"] },
+    { "refNo": "ISO22301-6.1", "category": "Planlama", "title": "Risklerin ve Fırsatların Ele Alınması", "description": "İş sürekliliği risklerini ve fırsatlarını belirleyin ve ele alın.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["iş sürekliliği riski","fırsatlar","planlama"] },
+    { "refNo": "ISO22301-8.2", "category": "İşletme", "title": "İş Etki Analizi (BIA)", "description": "İş sürekliliğini etkileyecek olayların olasılığını ve etkisini belirleyin. RTO/RPO tanımlayın.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["BIA","iş etkisi","RTO","RPO","kritik süreç","önceliklendirme"] },
+    { "refNo": "ISO22301-8.3", "category": "İşletme", "title": "İş Sürekliliği Stratejileri", "description": "İş sürekliliği gereksinimlerini karşılamak için uygun strateji ve çözümler geliştirin.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["sürekliliği stratejisi","DR stratejisi","alternatif site","failover"] },
+    { "refNo": "ISO22301-8.4", "category": "İşletme", "title": "İş Sürekliliği Planları", "description": "İş sürekliliği planlarını (BCP) belgeleyin, uygulayın ve sürdürün.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["BCP","iş sürekliliği planı","acil durum planı","prosedür"] },
+    { "refNo": "ISO22301-8.5", "category": "İşletme", "title": "Tatbikat Programı", "description": "İş sürekliliği planlarının etkinliğini doğrulamak için tatbikat programı oluşturun.", "type": "ZORUNLU", "priority": "🔴 KRİTİK", "keywords": ["tatbikat","DR testi","masa başı tatbikatı","BCP testi"] },
+    { "refNo": "ISO22301-9.1", "category": "Performans Değerlendirme", "title": "İzleme ve Ölçüm", "description": "BCMS performansını ve etkinliğini izleyin ve ölçün.", "type": "ZORUNLU", "priority": "🟠 YÜKSEK", "keywords": ["performans izleme","KPI","BCMS ölçümü"] },
+    { "refNo": "ISO22301-9.2", "category": "Performans Değerlendirme", "title": "İç Denetim", "description": "BCMS'nin gereksinimlere uygunluğunu doğrulamak için iç denetim gerçekleştirin.", "type": "ZORUNLU", "priority": "🟠 YÜKSEK", "keywords": ["iç denetim","BCMS denetimi","uygunsuzluk"] },
+    { "refNo": "ISO22301-10.1", "category": "İyileştirme", "title": "Uygunsuzluk ve Düzeltici Faaliyet", "description": "Uygunsuzlukları ele alın ve nüksünü önlemek için düzeltici faaliyetler uygulayın.", "type": "ZORUNLU", "priority": "🟠 YÜKSEK", "keywords": ["uygunsuzluk","düzeltici faaliyet","CAPA","iyileştirme"] }
+  ]
+}

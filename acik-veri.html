@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Türkiye Açık Veri Paneli</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0f172a;
+      --surface: #1e293b;
+      --border:  #334155;
+      --muted:   #64748b;
+      --text:    #e2e8f0;
+      --sub:     #94a3b8;
+      --green:   #22c55e;
+      --green-d: #166534;
+      --blue:    #38bdf8;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --red:     #ef4444;
+    }
+
+    html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── Header ── */
+    .header {
+      height: 56px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 12px;
+      flex-shrink: 0;
+    }
+    .header-logo { font-size: 22px; }
+    .header-info h1 { font-size: 16px; font-weight: 700; color: #f8fafc; line-height: 1.2; }
+    .header-info p  { font-size: 11px; color: var(--muted); }
+    .header-badge {
+      margin-left: auto; background: #052e16; border: 1px solid #166534;
+      color: var(--green); font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      height: 44px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; padding: 0 20px; flex-shrink: 0;
+    }
+    .tab {
+      padding: 0 18px; cursor: pointer; font-size: 13px; font-weight: 500;
+      color: var(--muted); border-bottom: 2px solid transparent;
+      display: flex; align-items: center; gap: 7px; transition: color .15s;
+    }
+    .tab.active   { color: var(--green); border-bottom-color: var(--green); }
+    .tab:hover:not(.active) { color: var(--text); }
+
+    /* ── Layout ── */
+    .app { display: flex; flex-direction: column; height: 100vh; }
+    .panel { display: none; flex: 1; overflow: hidden; }
+    .panel.active { display: flex; }
+
+    /* ══════════════════════════════════════
+       MAP PANEL
+    ══════════════════════════════════════ */
+    #map-panel { position: relative; }
+    #map { width: 100%; height: 100%; }
+
+    .loading-overlay {
+      position: absolute; inset: 0; z-index: 1000;
+      background: rgba(15,23,42,.9);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border); border-top-color: var(--green);
+      border-radius: 50%; animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-title { font-size: 14px; font-weight: 600; }
+    .loading-sub   { font-size: 11px; color: var(--muted); }
+    .loading-bar   { width: 200px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .loading-bar-fill {
+      height: 100%; width: 0; background: var(--green);
+      animation: progress 4s ease-in-out infinite;
+    }
+    @keyframes progress { 0%{width:0} 60%{width:80%} 100%{width:95%} }
+
+    .map-sidebar {
+      width: 290px; flex-shrink: 0;
+      background: var(--surface); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sidebar-top { padding: 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .stat-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+    }
+    .stat-card .s-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+    .stat-card .s-val   { font-size: 22px; font-weight: 700; color: var(--green); }
+    .stat-card .s-sub   { font-size: 11px; color: var(--sub); margin-top: 2px; }
+
+    .source-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #1e3a5f; border: 1px solid #1d4ed8; color: #93c5fd;
+      font-size: 10px; padding: 3px 8px; border-radius: 4px;
+    }
+
+    .section-hd {
+      font-size: 10px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .07em;
+      padding: 12px 16px 6px;
+    }
+    .ilce-search {
+      margin: 0 16px 8px;
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 7px 10px; border-radius: 6px; font-size: 12px; width: calc(100% - 32px);
+      outline: none;
+    }
+    .ilce-search:focus { border-color: var(--green); }
+
+    .ilce-scroll { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+    .ilce-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 10px; margin-bottom: 5px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; cursor: pointer; font-size: 12px;
+      transition: border-color .15s, background .15s;
+    }
+    .ilce-item:hover  { border-color: var(--green); }
+    .ilce-item.active { border-color: var(--green); background: #052e16; color: var(--green); }
+    .ilce-count {
+      background: var(--border); color: var(--sub);
+      font-size: 10px; padding: 2px 7px; border-radius: 10px;
+    }
+    .ilce-item.active .ilce-count { background: #166534; color: #bbf7d0; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track  { background: transparent; }
+    ::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 2px; }
+
+    /* ══════════════════════════════════════
+       CHART PANEL
+    ══════════════════════════════════════ */
+    #chart-panel { overflow-y: auto; padding: 24px; flex-direction: column; gap: 20px; }
+
+    .filter-bar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px;
+    }
+    .filter-bar label { font-size: 12px; color: var(--sub); }
+    .filter-select {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; outline: none;
+    }
+    .filter-select:focus { border-color: var(--green); }
+    .data-source-note {
+      margin-left: auto; font-size: 11px; color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .dot.live { background: var(--green); box-shadow: 0 0 0 2px #052e16; animation: pulse 2s infinite; }
+    .dot.sample { background: var(--orange); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    .kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .kpi-val { font-size: 26px; font-weight: 700; line-height: 1; }
+    .kpi-unit { font-size: 14px; font-weight: 400; }
+    .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+    .chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .chart-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px;
+    }
+    .chart-card.wide { grid-column: 1 / -1; }
+    .chart-hd { margin-bottom: 14px; }
+    .chart-title { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+    .chart-sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .chart-wrap  { position: relative; height: 210px; }
+    .chart-wrap.tall { height: 300px; }
+
+    .alert-banner {
+      background: #1c1917; border: 1px solid #78350f;
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 12px; color: #fed7aa;
+      display: flex; align-items: center; gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">🗺️</div>
+    <div class="header-info">
+      <h1>Türkiye Açık Veri Gösterge Paneli</h1>
+      <p>ulasav.csb.gov.tr · Prototip v0.1 · İstanbul Yeşil Alan + İzmir CO₂</p>
+    </div>
+    <div class="header-badge">Açık Veri · CC BY 4.0</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('map')" id="tab-map">
+      🌳 İstanbul Yeşil Alan Haritası
+    </div>
+    <div class="tab" onclick="switchTab('chart')" id="tab-chart">
+      📊 İzmir Çevre Gösterge Paneli
+    </div>
+  </div>
+
+  <!-- ── MAP PANEL ── -->
+  <div id="map-panel" class="panel active">
+    <div id="map" style="flex:1;"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="map-loading">
+      <div class="spinner"></div>
+      <div class="loading-title">İstanbul park verisi yükleniyor…</div>
+      <div class="loading-sub">data.ibb.gov.tr · ~10 MB GeoJSON</div>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="map-sidebar">
+      <div class="sidebar-top">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="s-label">Toplam Park</div>
+            <div class="s-val" id="stat-total">—</div>
+            <div class="s-sub">İstanbul geneli</div>
+          </div>
+          <div class="stat-card">
+            <div class="s-label">İlçe Sayısı</div>
+            <div class="s-val" id="stat-ilce">—</div>
+            <div class="s-sub">Aktif veri</div>
+          </div>
+        </div>
+        <span class="source-tag">📡 İBB Açık Veri · CC BY 4.0 · Mayıs 2025</span>
+      </div>
+
+      <div class="section-hd">İlçeye Göre Filtrele</div>
+      <input class="ilce-search" id="ilce-search" placeholder="İlçe ara…" oninput="filterIlceList()" />
+      <div class="ilce-scroll">
+        <div id="ilce-list" style="color:var(--muted);font-size:12px;">Veri bekleniyor…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHART PANEL ── -->
+  <div id="chart-panel" class="panel">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <label>Yıl:</label>
+      <select class="filter-select" id="yr-filter" onchange="updateCharts()">
+        <option value="all">Tüm Yıllar (2020–2026)</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+      </select>
+      <label>Hat:</label>
+      <select class="filter-select" id="line-filter" onchange="updateCharts()">
+        <option value="all">Tüm Hatlar</option>
+        <option value="metro">İzmir Metrosu</option>
+        <option value="karsiyaka">Karşıyaka Tramvayı</option>
+        <option value="konak">Konak Tramvayı</option>
+      </select>
+      <div class="data-source-note">
+        <div class="dot" id="data-dot"></div>
+        <span id="data-source-lbl">Veri yükleniyor…</span>
+      </div>
+    </div>
+
+    <!-- Alert banner (shown if using sample data) -->
+    <div class="alert-banner" id="sample-banner" style="display:none;">
+      ⚠️ <strong>Örnek veri görüntüleniyor.</strong> Gerçek veri için
+      <a href="https://acikveri.bizizmir.com" target="_blank" style="color:#fb923c;">acikveri.bizizmir.com</a>
+      adresine CORS izni veren bir ortamdan erişin.
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row" id="kpi-row">
+      <div class="kpi-card"><div class="kpi-lbl">Toplam CO₂</div><div class="kpi-val" style="color:var(--green)">—</div><div class="kpi-sub">Tüm hatlar · 2020–2026</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Metro Payı</div><div class="kpi-val" style="color:var(--blue)">—</div><div class="kpi-sub">Toplam içindeki oran</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">En Yüksek Ay</div><div class="kpi-val" style="color:var(--orange)">—</div><div class="kpi-sub">Tüm hatlar toplamı</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Son Veri</div><div class="kpi-val" style="color:var(--purple)">—</div><div class="kpi-sub">Son aylık ölçüm</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid">
+      <div class="chart-card wide">
+        <div class="chart-hd">
+          <div class="chart-title">CO₂ Emisyon Değerleri (Ton) — Aylık</div>
+          <div class="chart-sub">İzmir Metro + Karşıyaka + Konak Tramvayı · Kaynak: acikveri.bizizmir.com</div>
+        </div>
+        <div class="chart-wrap tall"><canvas id="c-co2"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-hd">
+          <div class="chart-title">Milyon Yolcu Başına CO₂</div>
+          <div class="chart-sub">Verimlilik göstergesi · ton/Myolcu</div>
+        </div>
+        <div class="chart-wrap"><canvas id="c-eff"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-hd">
+          <div class="chart-title">Yıllık Toplam Emisyon</div>
+          <div class="chart-sub">Hat bazında yıllık karşılaştırma</div>
+        </div>
+        <div class="chart-wrap"><canvas id="c-yearly"></canvas></div>
+      </div>
+    </div>
+
+  </div><!-- /chart-panel -->
+</div><!-- /app -->
+
+<!-- ── Scripts ── -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────
+   TABS
+───────────────────────────────────────────────────── */
+function switchTab(id) {
+  ['map','chart'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === id);
+    document.getElementById(t + '-panel').classList.toggle('active', t === id);
+  });
+  if (id === 'map' && mapInst) setTimeout(() => mapInst.invalidateSize(), 10);
+  if (id === 'chart' && co2Raw.length) setTimeout(() => renderCharts(), 10);
+}
+
+/* ─────────────────────────────────────────────────────
+   MAP — İstanbul Park GeoJSON
+   Source: data.ibb.gov.tr (CC BY 4.0)
+───────────────────────────────────────────────────── */
+const PARK_URL = '/proxy/ibb-parks';
+
+let mapInst = null;
+let allFeatures = [];
+let geoLayer   = null;
+let activeIlce = null;
+let ilceCounts = {};
+
+function initMap() {
+  mapInst = L.map('map', { center: [41.015, 28.98], zoom: 11 });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO',
+    maxZoom: 19,
+  }).addTo(mapInst);
+
+  fetchParks();
+}
+
+function fetchParks() {
+  fetch(PARK_URL)
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(data => {
+      allFeatures = data.features || [];
+      document.getElementById('map-loading').style.display = 'none';
+      buildIlceCounts();
+      renderMapLayer(allFeatures);
+      renderSidebar();
+    })
+    .catch(err => {
+      showMapError(err.message);
+    });
+}
+
+/* Detect property key names defensively */
+function prop(p, ...keys) {
+  for (const k of keys) if (p[k] !== undefined && p[k] !== null) return String(p[k]);
+  return '';
+}
+
+function getParkName(p) { return prop(p, 'park_adi','ADI','adi','NAME','name','PARK_ADI') || 'Park'; }
+function getParkIlce(p) { return prop(p, 'ilce','ILCE','İLÇE','district','DISTRICT') || 'Bilinmiyor'; }
+function getParkSeflik(p) { return prop(p, 'seflik','SEFLIK','ŞEFLİK'); }
+
+function buildIlceCounts() {
+  ilceCounts = {};
+  allFeatures.forEach(f => {
+    const ilce = getParkIlce(f.properties);
+    ilceCounts[ilce] = (ilceCounts[ilce] || 0) + 1;
+  });
+}
+
+function renderMapLayer(features) {
+  if (geoLayer) mapInst.removeLayer(geoLayer);
+
+  geoLayer = L.geoJSON(
+    { type: 'FeatureCollection', features },
+    {
+      pointToLayer: (_, latlng) =>
+        L.circleMarker(latlng, {
+          radius: 5,
+          fillColor: '#22c55e',
+          color: '#166534',
+          weight: 1,
+          opacity: .9,
+          fillOpacity: .7,
+        }),
+      onEachFeature: (f, layer) => {
+        const p = f.properties;
+        const name    = getParkName(p);
+        const ilce    = getParkIlce(p);
+        const seflik  = getParkSeflik(p);
+        layer.bindPopup(
+          `<div style="font-family:system-ui;min-width:160px;">` +
+          `<div style="font-weight:700;font-size:13px;margin-bottom:4px;">${name}</div>` +
+          (ilce   ? `<div style="font-size:11px;color:#555;">📍 ${ilce}</div>` : '') +
+          (seflik ? `<div style="font-size:11px;color:#555;">🏢 ${seflik}</div>` : '') +
+          `</div>`
+        );
+      },
+    }
+  ).addTo(mapInst);
+
+  if (features.length > 0) {
+    mapInst.fitBounds(geoLayer.getBounds(), { padding: [20, 20] });
+  }
+}
+
+function renderSidebar() {
+  document.getElementById('stat-total').textContent = allFeatures.length.toLocaleString('tr');
+  document.getElementById('stat-ilce').textContent  = Object.keys(ilceCounts).length;
+  renderIlceList('');
+}
+
+function renderIlceList(query) {
+  const sorted = Object.entries(ilceCounts)
+    .filter(([name]) => name.toLowerCase().includes(query.toLowerCase()))
+    .sort((a, b) => b[1] - a[1]);
+
+  const el = document.getElementById('ilce-list');
+  el.innerHTML =
+    `<div class="ilce-item ${activeIlce === null ? 'active' : ''}" onclick="selectIlce(null)">` +
+    `<span>Tümü</span><span class="ilce-count">${allFeatures.length}</span></div>` +
+    sorted.map(([name, cnt]) =>
+      `<div class="ilce-item ${activeIlce === name ? 'active' : ''}" onclick="selectIlce('${name}')">` +
+      `<span>${name}</span><span class="ilce-count">${cnt}</span></div>`
+    ).join('');
+}
+
+function filterIlceList() {
+  renderIlceList(document.getElementById('ilce-search').value);
+}
+
+function selectIlce(ilce) {
+  activeIlce = ilce;
+  const filtered = ilce
+    ? allFeatures.filter(f => getParkIlce(f.properties) === ilce)
+    : allFeatures;
+  renderMapLayer(filtered);
+  renderIlceList(document.getElementById('ilce-search').value);
+}
+
+function showMapError(msg) {
+  document.getElementById('map-loading').innerHTML = `
+    <div style="text-align:center;padding:24px;max-width:320px;">
+      <div style="font-size:36px;margin-bottom:12px;">⚠️</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px;color:#ef4444;">Veri yüklenemedi</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6;">
+        CORS veya ağ hatası oluştu.<br>
+        Dosyayı <a href="${PARK_URL}" target="_blank" style="color:#38bdf8;">buradan</a> indirip
+        yerel sunucudan sunabilirsiniz.
+      </div>
+      <div style="font-size:10px;color:#475569;margin-top:10px;font-family:monospace;">${msg}</div>
+    </div>`;
+}
+
+/* ─────────────────────────────────────────────────────
+   CO2 CHARTS — İzmir BBB
+   Source: acikveri.bizizmir.com (CC BY 4.0)
+───────────────────────────────────────────────────── */
+const CO2_URL = '/proxy/izmir-co2?file=emissions';
+const EFF_URL = '/proxy/izmir-co2?file=efficiency';
+
+const MONTHS = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+
+let co2Raw = [];
+let effRaw = [];
+let usingRealData = false;
+
+let chartCO2 = null, chartEff = null, chartYearly = null;
+
+/* Chart.js global defaults */
+Chart.defaults.color = '#64748b';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+async function loadCO2() {
+  try {
+    const [r1, r2] = await Promise.all([fetch(CO2_URL), fetch(EFF_URL)]);
+    if (!r1.ok || !r2.ok) throw new Error('HTTP error');
+    const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+    co2Raw = parseCsv(t1);
+    effRaw = parseCsv(t2);
+    usingRealData = true;
+  } catch {
+    co2Raw = buildSampleCO2();
+    effRaw = buildSampleEff(co2Raw);
+    usingRealData = false;
+  }
+  applyDataSourceUI();
+  renderKPIs();
+  renderCharts();
+}
+
+function parseCsv(text) {
+  // Normalize Turkish decimal separator (comma → dot) before parsing
+  const normalized = text.replace(/(\d),(\d)/g, '$1.$2');
+  const result = Papa.parse(normalized, { header: true, dynamicTyping: true, skipEmptyLines: true });
+  return result.data;
+}
+
+function applyDataSourceUI() {
+  const dot = document.getElementById('data-dot');
+  const lbl = document.getElementById('data-source-lbl');
+  const banner = document.getElementById('sample-banner');
+  if (usingRealData) {
+    dot.className = 'dot live';
+    lbl.textContent = 'Canlı veri · acikveri.bizizmir.com';
+    banner.style.display = 'none';
+  } else {
+    dot.className = 'dot sample';
+    lbl.textContent = 'Örnek veri (CORS kısıtlaması)';
+    banner.style.display = 'flex';
+  }
+}
+
+/* ── Sample data generator (bilinen veri yapısına uygun) ── */
+function buildSampleCO2() {
+  const rows = [];
+  // Known reference points:
+  //   2020-01: Metro 2116.11 / Karşıyaka 191.55 / Konak 303.87
+  //   2022-04+: 0 (servis durması)
+  //   2023-05: Metro 2.5, Karşıyaka 1.58, Konak 1.18
+  //   2026-02: Metro 16.3, Karşıyaka 2.5, Konak 4.06
+  for (let y = 2020; y <= 2026; y++) {
+    const maxM = y === 2026 ? 2 : 12;
+    for (let m = 1; m <= maxM; m++) {
+      let metro, kars, konak;
+      if (y <= 2021) {
+        const seasonal = 1 + .15 * Math.sin((m - 3) * Math.PI / 6);
+        metro  = +(( 2100 + rnd(-150, 150)) * seasonal).toFixed(2);
+        kars   = +((  190 + rnd(-20,  20))  * seasonal).toFixed(2);
+        konak  = +((  300 + rnd(-30,  30))  * seasonal).toFixed(2);
+      } else if (y === 2022 && m <= 3) {
+        metro  = +(( 2000 + rnd(-200, 0)).toFixed(2));
+        kars   = +((  180 + rnd(-20,  0)).toFixed(2));
+        konak  = +((  280 + rnd(-30,  0)).toFixed(2));
+      } else if (y === 2022) {
+        metro = 0; kars = 0; konak = 0;   // servis durdu
+      } else if (y === 2023) {
+        const t = (m - 1) / 11;
+        metro  = +(lerp(1.5,  8,  t) + rnd(-.5, .5)).toFixed(2);
+        kars   = +(lerp(0.8,  1.8, t) + rnd(-.1, .1)).toFixed(2);
+        konak  = +(lerp(1.0,  2.5, t) + rnd(-.2, .2)).toFixed(2);
+      } else if (y >= 2024) {
+        const base = y === 2024 ? 1 : y === 2025 ? 1.4 : 1.6;
+        metro  = +(12 * base + rnd(-2, 2)).toFixed(2);
+        kars   = +( 2 * base + rnd(-.3, .3)).toFixed(2);
+        konak  = +( 3.5 * base + rnd(-.5, .5)).toFixed(2);
+      }
+      rows.push({ YIL: y, AY: m, IZMIR_METROSU: metro, KARSIYAKA_TRAMVAYI: kars, KONAK_TRAMVAYI: konak });
+    }
+  }
+  return rows;
+}
+
+function buildSampleEff(co2) {
+  // Efficiency = CO2 / passenger_millions (simulated)
+  return co2.map(d => {
+    const scale = d.IZMIR_METROSU > 100 ? 800 + rnd(-80, 80)
+                : d.IZMIR_METROSU > 1   ? 30  + rnd(-5, 5)
+                : 1;
+    return {
+      YIL: d.YIL, AY: d.AY,
+      IZMIR_METROSU:      d.IZMIR_METROSU      > 0 ? +(d.IZMIR_METROSU      / scale      ).toFixed(4) : 0,
+      KARSIYAKA_TRAMVAYI: d.KARSIYAKA_TRAMVAYI > 0 ? +(d.KARSIYAKA_TRAMVAYI / (scale/8)  ).toFixed(4) : 0,
+      KONAK_TRAMVAYI:     d.KONAK_TRAMVAYI     > 0 ? +(d.KONAK_TRAMVAYI     / (scale/6)  ).toFixed(4) : 0,
+    };
+  });
+}
+
+function rnd(min, max) { return min + Math.random() * (max - min); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+/* ── KPI cards ── */
+function renderKPIs() {
+  const allTotal = sumField(co2Raw, ['IZMIR_METROSU','KARSIYAKA_TRAMVAYI','KONAK_TRAMVAYI']);
+  const metroTot = sumField(co2Raw, ['IZMIR_METROSU']);
+  const maxRow   = co2Raw.reduce((best, d) => {
+    const s = (d.IZMIR_METROSU||0) + (d.KARSIYAKA_TRAMVAYI||0) + (d.KONAK_TRAMVAYI||0);
+    return s > best.s ? { d, s } : best;
+  }, { d: co2Raw[0], s: 0 });
+  const last = co2Raw[co2Raw.length - 1];
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-lbl">Toplam CO₂ (2020–2026)</div>
+      <div class="kpi-val" style="color:var(--green)">${(allTotal/1000).toFixed(1)}<span class="kpi-unit"> k ton</span></div>
+      <div class="kpi-sub">Tüm hatlar · ${co2Raw.length} aylık veri</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Metro CO₂ Payı</div>
+      <div class="kpi-val" style="color:var(--blue)">${allTotal > 0 ? ((metroTot/allTotal)*100).toFixed(0) : '—'}<span class="kpi-unit"> %</span></div>
+      <div class="kpi-sub">İzmir Metrosu emisyon oranı</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">En Yüksek Ay</div>
+      <div class="kpi-val" style="color:var(--orange)">${maxRow.d ? MONTHS[(maxRow.d.AY||1)-1]+' '+maxRow.d.YIL : '—'}</div>
+      <div class="kpi-sub">${maxRow.s.toFixed(0)} ton · tüm hatlar</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Son Ölçüm</div>
+      <div class="kpi-val" style="color:var(--purple)">${last ? MONTHS[(last.AY||1)-1]+' '+last.YIL : '—'}</div>
+      <div class="kpi-sub">${last ? ((last.IZMIR_METROSU||0)+(last.KARSIYAKA_TRAMVAYI||0)+(last.KONAK_TRAMVAYI||0)).toFixed(1)+' ton' : ''}</div>
+    </div>`;
+}
+
+function sumField(data, fields) {
+  return data.reduce((s, d) => s + fields.reduce((ss, f) => ss + (d[f]||0), 0), 0);
+}
+
+/* ── Charts ── */
+const CHART_OPTS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 12, padding: 12 } },
+    tooltip: { backgroundColor: '#1e293b', borderColor: '#334155', borderWidth: 1, titleColor: '#f1f5f9', bodyColor: '#94a3b8', padding: 10 },
+  },
+  scales: {
+    x: { ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 40, maxTicksLimit: 18 }, grid: { color: 'rgba(51,65,85,.5)' } },
+    y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: 'rgba(51,65,85,.5)' } },
+  },
+};
+
+function getFilteredCO2() {
+  const yr = document.getElementById('yr-filter').value;
+  return yr === 'all' ? co2Raw : co2Raw.filter(d => String(d.YIL) === yr);
+}
+function getFilteredEff() {
+  const yr = document.getElementById('yr-filter').value;
+  return yr === 'all' ? effRaw : effRaw.filter(d => String(d.YIL) === yr);
+}
+function labels(data) {
+  return data.map(d => `${MONTHS[(d.AY||1)-1]} ${d.YIL}`);
+}
+
+function updateCharts() { renderCharts(); }
+
+function renderCharts() {
+  if (!co2Raw.length) return;
+
+  const lineF  = document.getElementById('line-filter').value;
+  const fCO2   = getFilteredCO2();
+  const fEff   = getFilteredEff();
+  const lbl    = labels(fCO2);
+
+  /* dataset definitions */
+  const SERIES = [
+    { key: 'metro',    field: 'IZMIR_METROSU',      label: 'İzmir Metrosu',     color: '#22c55e' },
+    { key: 'karsiyaka',field: 'KARSIYAKA_TRAMVAYI', label: 'Karşıyaka Tramvayı',color: '#38bdf8' },
+    { key: 'konak',    field: 'KONAK_TRAMVAYI',     label: 'Konak Tramvayı',    color: '#fb923c' },
+  ];
+
+  const activeSeries = SERIES.filter(s => lineF === 'all' || lineF === s.key);
+
+  /* ── CO2 line chart ── */
+  if (chartCO2) chartCO2.destroy();
+  chartCO2 = new Chart(document.getElementById('c-co2'), {
+    type: 'line',
+    data: {
+      labels: lbl,
+      datasets: activeSeries.map(s => ({
+        label: s.label,
+        data: fCO2.map(d => d[s.field] || 0),
+        borderColor: s.color,
+        backgroundColor: s.color + '18',
+        borderWidth: 2,
+        pointRadius: fCO2.length > 60 ? 0 : 3,
+        pointHoverRadius: 5,
+        tension: .3,
+        fill: activeSeries.length === 1,
+      })),
+    },
+    options: {
+      ...CHART_OPTS,
+      plugins: {
+        ...CHART_OPTS.plugins,
+        annotation: undefined,
+      },
+    },
+  });
+
+  /* ── Efficiency line chart ── */
+  if (chartEff) chartEff.destroy();
+  const fEffLabels = labels(fEff);
+  chartEff = new Chart(document.getElementById('c-eff'), {
+    type: 'line',
+    data: {
+      labels: fEffLabels,
+      datasets: activeSeries.map(s => ({
+        label: s.label,
+        data: fEff.map(d => d[s.field] || 0),
+        borderColor: s.color,
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: .3,
+      })),
+    },
+    options: CHART_OPTS,
+  });
+
+  /* ── Yearly bar chart (always full range) ── */
+  if (chartYearly) chartYearly.destroy();
+  const byYear = {};
+  co2Raw.forEach(d => {
+    if (!byYear[d.YIL]) byYear[d.YIL] = { IZMIR_METROSU: 0, KARSIYAKA_TRAMVAYI: 0, KONAK_TRAMVAYI: 0 };
+    ['IZMIR_METROSU','KARSIYAKA_TRAMVAYI','KONAK_TRAMVAYI'].forEach(f => {
+      byYear[d.YIL][f] += d[f] || 0;
+    });
+  });
+  const years = Object.keys(byYear).sort();
+
+  chartYearly = new Chart(document.getElementById('c-yearly'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: SERIES.map(s => ({
+        label: s.label,
+        data: years.map(y => +byYear[y][s.field].toFixed(1)),
+        backgroundColor: s.color + 'cc',
+        borderColor: s.color,
+        borderWidth: 1,
+        borderRadius: 3,
+      })),
+    },
+    options: {
+      ...CHART_OPTS,
+      scales: {
+        x: { ...CHART_OPTS.scales.x, ticks: { ...CHART_OPTS.scales.x.ticks, maxRotation: 0 } },
+        y: CHART_OPTS.scales.y,
+      },
+    },
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  loadCO2();
+});
+</script>
+</body>
+</html>

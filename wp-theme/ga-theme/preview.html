@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gürkan Atabay - Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=2">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">
+        <span class="logo-text">GA</span>
+    </a>
+
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="#about" class="nav-link" data-en="About" data-tr="Hakkımda">About</a></li>
+      <li><a href="#services" class="nav-link" data-en="Services" data-tr="Hizmetler">Services</a></li>
+      <li><a href="#projects" class="nav-link" data-en="Projects" data-tr="Projeler">Projects</a></li>
+      <li><a href="#opendata" class="nav-link" data-en="Open Data" data-tr="Açık Veri">Open Data</a></li>
+      <li><a href="#contact" class="nav-link" data-en="Contact" data-tr="İletişim">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="lang-toggle" id="langToggle" aria-label="Switch language">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="langLabel">TR</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+  <div class="hero-bg-pattern"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span data-en="Founder & CTO at Tederga Bilişim" data-tr="Tederga Bilişim Kurucu & CTO">Founder & CTO at Tederga Bilişim</span>
+        </div>
+        <h1 class="hero-name">Gürkan Atabay</h1>
+        <p class="hero-title" data-en="Computer Engineer | Cloud Infrastructure & Open Data Expert | Project Leader | Strategic Advisor | Auditor" data-tr="Bilgisayar Mühendisi | Bulut Altyapı & Açık Veri Uzmanı | Proje Lideri | Stratejik Danışman | Denetçi">Computer Engineer | Cloud Infrastructure & Open Data Expert | Project Leader | Strategic Advisor | Auditor</p>
+        <p class="hero-summary" data-en="Over 20 years of expertise in IT infrastructure, cloud technologies, SaaS development, and strategic IT management. Committed to leveraging open data and civic technology for public good." data-tr="BT altyapısı, bulut teknolojileri, SaaS geliştirme ve stratejik BT yönetiminde 20 yılı aşkın deneyim. Açık veri ve sivil teknolojiyi kamu yararına kullanmaya adanmış.">Over 20 years of expertise in IT infrastructure, cloud technologies, SaaS development, and strategic IT management. Committed to leveraging open data and civic technology for public good.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary" data-en="Get in Touch" data-tr="İletişime Geçin">Get in Touch</a>
+          <a href="#projects" class="btn btn-outline" data-en="View Projects" data-tr="Projeleri Gör">View Projects</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-avatar">
+          <div class="avatar-placeholder">GA</div>
+        </div>
+        <blockquote class="hero-motto" data-en="&ldquo;Technology for a better tomorrow.&rdquo;" data-tr="&ldquo;Daha iyi bir yarın için teknoloji.&rdquo;">&ldquo;Technology for a better tomorrow.&rdquo;</blockquote>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span data-en="Scroll" data-tr="Kaydır">Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="About Me" data-tr="Hakkımda">About Me</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text fade-in">
+        <p data-en="With over 20 years of experience in information technologies, I continue my work in the IT field through the projects I have led and the company I founded — Tederga Bilişim." data-tr="20 yılı aşkın bilgi teknolojileri deneyimimle, yönettiğim projeler ve kurduğum şirket Tederga Bilişim aracılığıyla BT alanındaki çalışmalarımı sürdürmekteyim.">With over 20 years of experience in information technologies, I continue my work in the IT field through the projects I have led and the company I founded — Tederga Bilişim.</p>
+        <p data-en="Through Tederga Bilişim, I provide end-to-end IT solutions for medium and large-scale enterprises with my expert team — from business consultancy to custom applications, from operations to technical services, from hardware to software — all aligned with their future goals." data-tr="Tederga Bilişim bünyesinde uzman kadromla, orta ve büyük ölçekli şirketlerin gelecek hedeflerine uygun olarak iş danışmanlığından kuruma özel uygulamalara, işletimden teknik hizmetlere, donanımdan yazılıma kadar tüm bilişim ihtiyaçlarını karşılıyorum.">Through Tederga Bilişim, I provide end-to-end IT solutions for medium and large-scale enterprises with my expert team — from business consultancy to custom applications, from operations to technical services, from hardware to software — all aligned with their future goals.</p>
+        <p data-en="Driven by a vision to contribute to Turkey's digital transformation, I work with a mission to build sustainable structures for organizations." data-tr="Türkiye'nin dijital dönüşümüne katkı sağlama vizyonuyla, kurumlar için sürdürülebilir yapılar oluşturma misyonuyla çalışmalarımı sürdürmekteyim.">Driven by a vision to contribute to Turkey's digital transformation, I work with a mission to build sustainable structures for organizations.</p>
+      </div>
+    </div>
+
+    <h3 class="about-subsection-title fade-in" data-en="Experience" data-tr="Deneyim">Experience</h3>
+
+    <div class="timeline fade-in">
+      <!-- Tederga -->
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <h3 data-en="Founder & CTO" data-tr="Kurucu & CTO">Founder & CTO</h3>
+            <span class="timeline-company">Tederga Bilişim</span>
+            <span class="timeline-date">2020 – Present</span>
+          </div>
+          <ul class="timeline-details">
+            <li data-en="Led IT infrastructure design and integration for Senegal National Stadium (server, storage, network, IPTV, IP telephony, security)" data-tr="Senegal Ulusal Stadyumu BT altyapı tasarımı ve entegrasyonuna liderlik (sunucu, depolama, ağ, IPTV, IP telefon, güvenlik)">Led IT infrastructure design and integration for Senegal National Stadium (server, storage, network, IPTV, IP telephony, security)</li>
+            <li data-en="Delivered hospital IT projects in Turkmenistan (Rehabilitation & Physiology) and Libya (Zliten Hospital)" data-tr="Türkmenistan'da (Rehabilitasyon ve Fizyoloji Hastaneleri) ve Libya'da (Zliten Hastanesi) hastane BT projeleri teslim edildi">Delivered hospital IT projects in Turkmenistan (Rehabilitation & Physiology) and Libya (Zliten Hospital)</li>
+            <li data-en="Technical lead for Tuzla Municipality Open Data Portal using CKAN" data-tr="CKAN kullanarak Tuzla Belediyesi Açık Veri Portalı teknik liderliği">Technical lead for Tuzla Municipality Open Data Portal using CKAN</li>
+            <li data-en="Launched SaaS platforms: DewsLife (20K+ users), Coliseum Sports & Life, PTDUO" data-tr="SaaS platformları: DewsLife (20K+ kullanıcı), Coliseum Sports & Life, PTDUO">Launched SaaS platforms: DewsLife (20K+ users), Coliseum Sports & Life, PTDUO</li>
+            <li data-en="Mentored 15+ young talents into full-time tech careers" data-tr="15'ten fazla genç yeteneği tam zamanlı teknoloji kariyerine hazırladı">Mentored 15+ young talents into full-time tech careers</li>
+            <li data-en="Provided consultancy for Norton Rose Fulbright Turkey and EdgeUno Turkey" data-tr="Norton Rose Fulbright Türkiye ve EdgeUno Türkiye için danışmanlık sağlandı">Provided consultancy for Norton Rose Fulbright Turkey and EdgeUno Turkey</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Community Engagement -->
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <h3 data-en="Board Member" data-tr="Yönetim Kurulu Üyesi">Board Member</h3>
+            <span class="timeline-company" data-en="Open Data and Technology Association (AVTED)" data-tr="Açık Veri ve Teknoloji Derneği (AVTED)">Open Data and Technology Association (AVTED)</span>
+            <span class="timeline-date">2022 – Present</span>
+          </div>
+          <ul class="timeline-details">
+            <li data-en="Board member and Corporate Communications Officer" data-tr="Yönetim kurulu üyesi ve Kurumsal İletişim Sorumlusu">Board member and Corporate Communications Officer</li>
+            <li data-en="Contributed to TBMM AI Research Commission (Feb 2025) — presentation on Open Data & AI synergies" data-tr="TBMM Yapay Zeka Araştırma Komisyonu'na katkı (Şubat 2025) — Açık Veri & YZ sinerjileri sunumu">Contributed to TBMM AI Research Commission (Feb 2025) — presentation on Open Data & AI synergies</li>
+            <li data-en="Designed Open Data Index (2023 & 2024) data visualizations for national reports" data-tr="Ulusal raporlar için Açık Veri Endeksi (2023 & 2024) veri görselleştirmelerini tasarladı">Designed Open Data Index (2023 & 2024) data visualizations for national reports</li>
+            <li data-en="Moderated panels at Open Data Summit 2024" data-tr="Açık Veri Zirvesi 2024'te panel moderatörlüğü yaptı">Moderated panels at Open Data Summit 2024</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- VDC Teknoloji -->
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <h3 data-en="Founder & COO" data-tr="Kurucu & COO">Founder & COO</h3>
+            <span class="timeline-company">VDC Teknoloji</span>
+            <span class="timeline-date">2010 – 2020</span>
+          </div>
+          <ul class="timeline-details">
+            <li data-en="Led IT infrastructure design for Türkmenbaşı Port, Turkmenistan (300+ servers, 15 PB storage)" data-tr="Türkmenbaşı Limanı BT altyapı tasarımına liderlik (300+ sunucu, 15 PB depolama)">Led IT infrastructure design for Türkmenbaşı Port, Turkmenistan (300+ servers, 15 PB storage)</li>
+            <li data-en="IT system management, vehicle tracking, and enterprise consultancy across various sectors" data-tr="Çeşitli sektörlerde BT sistem yönetimi, araç takip sistemleri ve kurumsal danışmanlık">IT system management, vehicle tracking, and enterprise consultancy across various sectors</li>
+            <li data-en="Conducted IT audits for enterprise-level organizations" data-tr="Kurumsal düzeyde organizasyonlar için BT denetimleri gerçekleştirildi">Conducted IT audits for enterprise-level organizations</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Home Store -->
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <h3 data-en="Manager" data-tr="Yönetici">Manager</h3>
+            <span class="timeline-company">Home Store A.Ş.</span>
+            <span class="timeline-date" data-en="Sep 2009 – Dec 2010" data-tr="Eylül 2009 – Aralık 2010">Sep 2009 – Dec 2010</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mercek Holding -->
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <h3 data-en="Manager" data-tr="Yönetici">Manager</h3>
+            <span class="timeline-company">Mercek Holding A.Ş. / Abbate A.Ş.</span>
+            <span class="timeline-date" data-en="Aug 2006 – Mar 2009" data-tr="Ağustos 2006 – Mart 2009">Aug 2006 – Mar 2009</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acarlar Şirketler Grubu -->
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <h3 data-en="Manager" data-tr="Yönetici">Manager</h3>
+            <span class="timeline-company">Acarlar Şirketler Grubu / Coliseum Yaşam Merkezi</span>
+            <span class="timeline-date" data-en="May 2001 – Aug 2006" data-tr="Mayıs 2001 – Ağustos 2006">May 2001 – Aug 2006</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Credentials & Education -->
+    <div class="credentials-grid fade-in" style="margin-top: 80px;">
+      <!-- Certifications -->
+      <div>
+        <h3 class="credentials-subtitle" data-en="Certifications" data-tr="Sertifikalar">Certifications</h3>
+
+        <div class="credential-item">
+          <div class="credential-badge">MCSE</div>
+          <div>
+            <strong>Microsoft Certified Solutions Expert</strong>
+            <p>Cloud Platform and Infrastructure Charter Member</p>
+            <span class="credential-date">2016</span>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">MCSE</div>
+          <div>
+            <strong>Microsoft Certified Solutions Expert</strong>
+            <p>Server Infrastructure</p>
+            <span class="credential-date">2013</span>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">MCSA</div>
+          <div>
+            <strong>MCSA: Windows Server 2012</strong>
+            <p>Microsoft Certified Solutions Associate</p>
+            <span class="credential-date">2013</span>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">MCT</div>
+          <div>
+            <strong>Microsoft Certified Trainer</strong>
+            <p data-en="Active Status" data-tr="Aktif Durum">Active Status</p>
+            <span class="credential-date">2021 – 2025</span>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">MCP</div>
+          <div>
+            <strong>Microsoft Certified Professional</strong>
+            <p data-en="9 exams passed — Server, SQL, Infrastructure" data-tr="9 sınav geçildi — Sunucu, SQL, Altyapı">9 exams passed — Server, SQL, Infrastructure</p>
+            <span class="credential-date">2004 – 2013</span>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">EdX</div>
+          <div>
+            <strong>Open and Smart Government</strong>
+            <p>DelftX OG101x – EdX Certification</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education & Skills -->
+      <div>
+        <h3 class="credentials-subtitle" data-en="Education" data-tr="Eğitim">Education</h3>
+
+        <div class="credential-item">
+          <div class="credential-badge">B.Sc.</div>
+          <div>
+            <strong data-en="Computer Engineering" data-tr="Bilgisayar Mühendisliği">Computer Engineering</strong>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">B.A.</div>
+          <div>
+            <strong data-en="Economics" data-tr="İktisat">Economics</strong>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-badge">A.A.</div>
+          <div>
+            <strong data-en="Computer Programming" data-tr="Bilgisayar Programcılığı">Computer Programming</strong>
+          </div>
+        </div>
+
+        <h3 class="credentials-subtitle" style="margin-top: 32px;" data-en="Technical Skills" data-tr="Teknik Beceriler">Technical Skills</h3>
+
+        <div class="skills-tags">
+          <span class="skill-tag">Microsoft Azure</span>
+          <span class="skill-tag">Hyper-V</span>
+          <span class="skill-tag">VMware VCF</span>
+          <span class="skill-tag">Azure DevOps</span>
+          <span class="skill-tag">CKAN</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">React Native</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">PowerShell</span>
+          <span class="skill-tag">Bash</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">Agile / DevOps</span>
+          <span class="skill-tag">Microsoft Project</span>
+          <span class="skill-tag">SQL Server</span>
+        </div>
+
+        <h3 class="credentials-subtitle" style="margin-top: 32px;" data-en="Languages" data-tr="Diller">Languages</h3>
+
+        <div class="credential-item">
+          <div class="credential-badge">TR</div>
+          <div>
+            <strong data-en="Turkish — Native" data-tr="Türkçe — Ana Dil">Turkish — Native</strong>
+          </div>
+        </div>
+        <div class="credential-item">
+          <div class="credential-badge">EN</div>
+          <div>
+            <strong data-en="English — Upper Intermediate (B2)" data-tr="İngilizce — Üst Orta (B2)">English — Upper Intermediate (B2)</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="section section-alt" id="services">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="Tederga Bilişim" data-tr="Tederga Bilişim">Tederga Bilişim</h2>
+      <p class="section-subtitle" data-en="Founded in 2020 with a clear mission: to generate sustainable value through innovative digital ideas and to lead institutions into the future." data-tr="2020'de net bir misyonla kuruldu: yenilikçi dijital fikirlerle sürdürülebilir değer üretmek ve kurumları geleceğe taşımak.">Founded in 2020 with a clear mission: to generate sustainable value through innovative digital ideas and to lead institutions into the future.</p>
+    </div>
+
+    <div class="tederga-intro fade-in">
+      <p data-en="Tederga Bilişim was established by Gürkan Atabay to lead Turkey's digital transformation and to contribute globally through the power of software. From IT infrastructure design for international stadiums and hospitals to open data platforms and SaaS products, Tederga delivers end-to-end technology solutions." data-tr="Tederga Bilişim, Türkiye'nin dijital dönüşümüne öncülük etmek ve yazılımın gücüyle küresel katkıda bulunmak amacıyla Gürkan Atabay tarafından kurulmuştur. Uluslararası stadyum ve hastanelerin BT altyapı tasarımından açık veri platformlarına ve SaaS ürünlerine kadar uçtan uca teknoloji çözümleri sunmaktadır.">Tederga Bilişim was established by Gürkan Atabay to lead Turkey's digital transformation and to contribute globally through the power of software. From IT infrastructure design for international stadiums and hospitals to open data platforms and SaaS products, Tederga delivers end-to-end technology solutions.</p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3 data-en="IT Systems Integration" data-tr="BT Sistemleri Entegrasyonu">IT Systems Integration</h3>
+        <p data-en="End-to-end IT infrastructure design, installation, and commissioning for large-scale facilities including stadiums, hospitals, and data centers across multiple countries." data-tr="Stadyumlar, hastaneler ve veri merkezleri dahil büyük ölçekli tesisler için uçtan uca BT altyapı tasarımı, kurulum ve devreye alma. Birden fazla ülkede proje deneyimi.">End-to-end IT infrastructure design, installation, and commissioning for large-scale facilities including stadiums, hospitals, and data centers across multiple countries.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        </div>
+        <h3 data-en="Cloud & Infrastructure" data-tr="Bulut & Altyapı">Cloud & Infrastructure</h3>
+        <p data-en="Cloud infrastructure management, server systems, storage solutions, and network architecture. Partnered with global cloud providers including EdgeUno and Kaopu Cloud." data-tr="Bulut altyapı yönetimi, sunucu sistemleri, depolama çözümleri ve ağ mimarisi. EdgeUno ve Kaopu Cloud dahil küresel bulut sağlayıcılarıyla ortaklık.">Cloud infrastructure management, server systems, storage solutions, and network architecture. Partnered with global cloud providers including EdgeUno and Kaopu Cloud.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3 data-en="Software & SaaS Development" data-tr="Yazılım & SaaS Geliştirme">Software & SaaS Development</h3>
+        <p data-en="Mobile and web application development, SaaS platforms, and DevOps processes. Products include DewsLife fitness app (20K+ users) and PTDUO personal trainer platform." data-tr="Mobil ve web uygulama geliştirme, SaaS platformları ve DevOps süreçleri. DewsLife fitness uygulaması (20K+ kullanıcı) ve PTDUO kişisel antrenör platformu.">Mobile and web application development, SaaS platforms, and DevOps processes. Products include DewsLife fitness app (20K+ users) and PTDUO personal trainer platform.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <h3 data-en="Open Data Solutions" data-tr="Açık Veri Çözümleri">Open Data Solutions</h3>
+        <p data-en="CKAN-based open data portal development, data visualization, and civic technology platforms. Delivered Turkey's first municipal-level open data portal for Tuzla Municipality." data-tr="CKAN tabanlı açık veri portalı geliştirme, veri görselleştirme ve sivil teknoloji platformları. Türkiye'nin ilk belediye düzeyinde açık veri portalını Tuzla Belediyesi için geliştirdik.">CKAN-based open data portal development, data visualization, and civic technology platforms. Delivered Turkey's first municipal-level open data portal for Tuzla Municipality.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 data-en="Cybersecurity Consultancy" data-tr="Siber Güvenlik Danışmanlığı">Cybersecurity Consultancy</h3>
+        <p data-en="Information systems security assessments, IT audits, and cybersecurity consultancy for enterprise organizations and newly established companies." data-tr="Kurumsal organizasyonlar ve yeni kurulan şirketler için bilgi sistemleri güvenlik değerlendirmeleri, BT denetimleri ve siber güvenlik danışmanlığı.">Information systems security assessments, IT audits, and cybersecurity consultancy for enterprise organizations and newly established companies.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 data-en="Mentorship & Talent Development" data-tr="Mentorluk & Yetenek Geliştirme">Mentorship & Talent Development</h3>
+        <p data-en="Professional mentorship program nurturing 15+ young talents into full-time tech roles. Combining real-world projects with structured learning and social impact initiatives." data-tr="15'ten fazla genç yeteneği tam zamanlı teknoloji pozisyonlarına hazırlayan profesyonel mentorluk programı. Gerçek projeler, yapılandırılmış öğrenme ve sosyal etki girişimlerini birleştiren yaklaşım.">Professional mentorship program nurturing 15+ young talents into full-time tech roles. Combining real-world projects with structured learning and social impact initiatives.</p>
+      </div>
+    </div>
+
+    <!-- Tederga Milestones -->
+    <div class="section-header fade-in" style="margin-top: 80px;">
+      <h2 class="section-title" data-en="Milestones" data-tr="Kilometre Taşları">Milestones</h2>
+    </div>
+    <div class="timeline-milestones fade-in">
+      <div class="milestone">
+        <div class="milestone-year">2020</div>
+        <div class="milestone-content">
+          <p data-en="Tederga Bilişim founded on February 6. Secured contracts with global clients (EdgeUno, Norton Rose Fulbright) during the pandemic's first year." data-tr="Tederga Bilişim 6 Şubat'ta kuruldu. Pandeminin ilk yılında küresel müşterilerle (EdgeUno, Norton Rose Fulbright) sözleşmeler imzalandı.">Tederga Bilişim founded on February 6. Secured contracts with global clients (EdgeUno, Norton Rose Fulbright) during the pandemic's first year.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2021</div>
+        <div class="milestone-content">
+          <p data-en="Mentorship program launched with first two mentees. Completed the Senegal National Stadium IT infrastructure integration. Partnered with Kaopu Cloud." data-tr="İlk iki mentee ile mentorluk programı başlatıldı. Senegal Ulusal Stadyumu BT altyapı entegrasyonu tamamlandı. Kaopu Cloud ile ortaklık kuruldu.">Mentorship program launched with first two mentees. Completed the Senegal National Stadium IT infrastructure integration. Partnered with Kaopu Cloud.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2022</div>
+        <div class="milestone-content">
+          <p data-en="Expanded into software development. Won the Tuzla Municipality Open Data Portal project. Mentees began actively contributing to company projects." data-tr="Yazılım geliştirmeye genişleme. Tuzla Belediyesi Açık Veri Portalı projesi kazanıldı. Mentee'ler şirket projelerine aktif katkıda bulunmaya başladı.">Expanded into software development. Won the Tuzla Municipality Open Data Portal project. Mentees began actively contributing to company projects.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2023</div>
+        <div class="milestone-content">
+          <p data-en="Signed contracts for hospital IT projects in Turkmenistan (Rehabilitation & Physiology Hospitals) and Libya (Zliten Hospital). Server, storage, network, and cybersecurity systems." data-tr="Türkmenistan'da (Rehabilitasyon ve Fizyoloji Hastaneleri) ve Libya'da (Zliten Hastanesi) hastane BT projeleri için sözleşmeler imzalandı. Sunucu, depolama, ağ ve siber güvenlik sistemleri.">Signed contracts for hospital IT projects in Turkmenistan (Rehabilitation & Physiology Hospitals) and Libya (Zliten Hospital). Server, storage, network, and cybersecurity systems.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2024</div>
+        <div class="milestone-content">
+          <p data-en="Hospital projects completed. Launched Coliseum Sports & Life mobile app. Developed DewsLife fitness app — 5,000+ downloads in first month, now serving 20,000+ users." data-tr="Hastane projeleri tamamlandı. Coliseum Sports & Life mobil uygulaması geliştirildi. DewsLife fitness uygulaması — ilk ayda 5.000+ indirme, şu an 20.000+ kullanıcı.">Hospital projects completed. Launched Coliseum Sports & Life mobile app. Developed DewsLife fitness app — 5,000+ downloads in first month, now serving 20,000+ users.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-year">2025</div>
+        <div class="milestone-content">
+          <p data-en="Opened branch office at GOSB Teknopark — one of Turkey's largest R&D hubs. Strengthened focus on publicly funded innovation projects and cloud-native digital transformation." data-tr="GOSB Teknopark'ta şube ofisi açıldı — Türkiye'nin en büyük Ar-Ge merkezlerinden biri. Kamu destekli inovasyon projeleri ve bulut-yerel dijital dönüşüme odaklanma güçlendirildi.">Opened branch office at GOSB Teknopark — one of Turkey's largest R&D hubs. Strengthened focus on publicly funded innovation projects and cloud-native digital transformation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects Section -->
+<section class="section section-alt" id="projects">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="Projects" data-tr="Projeler">Projects</h2>
+      <p class="section-subtitle" data-en="A selection of key projects spanning infrastructure, SaaS, and civic technology." data-tr="Altyapı, SaaS ve sivil teknolojiyi kapsayan önemli projelerden bir seçki.">A selection of key projects spanning infrastructure, SaaS, and civic technology.</p>
+    </div>
+
+    <div class="projects-grid">
+      <!-- DewsLife -->
+      <div class="project-card fade-in">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <h3>DewsLife</h3>
+        <span class="project-meta">Web · Mobile · iOS · Android</span>
+        <p class="project-desc" data-en="Remote fitness training platform achieving 5,000+ downloads in first month, now serving over 50,000 users. Developed for Dews Life, a market leader in remote fitness." data-tr="İlk ayda 5.000'den fazla indirme elde eden uzaktan fitness eğitim platformu, şu anda 50.000'den fazla kullanıcıya hizmet veriyor. Uzaktan fitness alanında pazar lideri Dews Life için geliştirildi.">Remote fitness training platform achieving 5,000+ downloads in first month, now serving over 50,000 users. Developed for Dews Life, a market leader in remote fitness.</p>
+        <div class="project-links">
+          <a href="https://apps.apple.com/app/dewslife/id6478439498" target="_blank" rel="noopener noreferrer" class="project-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            App Store
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.dewslife" target="_blank" rel="noopener noreferrer" class="project-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302-2.302 2.302L15.07 12l2.628-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z"/></svg>
+            Google Play
+          </a>
+        </div>
+      </div>
+
+      <!-- Coliseum -->
+      <div class="project-card fade-in">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        </div>
+        <h3>Coliseum Sports & Life</h3>
+        <span class="project-meta">Mobile · iOS · Android</span>
+        <p class="project-desc" data-en="Mobile platform for one of Turkey's largest fitness center chains. Full mobile experience for members." data-tr="Türkiye'nin en büyük fitness merkezi zincirlerinden biri için mobil platform. Üyeler için tam mobil deneyim.">Mobile platform for one of Turkey's largest fitness center chains. Full mobile experience for members.</p>
+        <div class="project-links">
+          <a href="https://apps.apple.com/tr/app/coliseum-sports-life/id1532657563?l=tr" target="_blank" rel="noopener noreferrer" class="project-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            App Store
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.coliseum.coliseum&hl=en" target="_blank" rel="noopener noreferrer" class="project-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302-2.302 2.302L15.07 12l2.628-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z"/></svg>
+            Google Play
+          </a>
+        </div>
+      </div>
+
+      <!-- PTDUO -->
+      <div class="project-card fade-in">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>PTDUO</h3>
+        <span class="project-meta">SaaS · Web · Mobile</span>
+        <p class="project-desc" data-en="Personal Trainer management SaaS solution — connecting trainers with clients through a comprehensive digital platform." data-tr="Kişisel Antrenör yönetim SaaS çözümü — kapsamlı bir dijital platform aracılığıyla antrenörleri müşterilerle buluşturuyor.">Personal Trainer management SaaS solution — connecting trainers with clients through a comprehensive digital platform.</p>
+        <div class="project-links">
+          <a href="https://apps.apple.com/tr/app/ptduo/id6756878731" target="_blank" rel="noopener noreferrer" class="project-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            App Store
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.tederga.ptduo.client&hl=en" target="_blank" rel="noopener noreferrer" class="project-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302-2.302 2.302L15.07 12l2.628-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z"/></svg>
+            Google Play
+          </a>
+        </div>
+      </div>
+
+      <!-- Senegal Stadium -->
+      <div class="project-card fade-in">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/></svg>
+        </div>
+        <h3 data-en="Senegal National Stadium" data-tr="Senegal Ulusal Stadyumu">Senegal National Stadium</h3>
+        <span class="project-meta" data-en="IT Infrastructure · Integration" data-tr="BT Altyapı · Entegrasyon">IT Infrastructure · Integration</span>
+        <p class="project-desc" data-en="Complete IT infrastructure: wired/wireless networks, server systems, storage, IPTV, IP phones, and long-distance radio systems." data-tr="Tam BT altyapısı: kablolu/kablosuz ağlar, sunucu sistemleri, depolama, IPTV, IP telefonlar ve uzun mesafe radyo sistemleri.">Complete IT infrastructure: wired/wireless networks, server systems, storage, IPTV, IP phones, and long-distance radio systems.</p>
+      </div>
+
+      <!-- Turkmenistan Hospitals -->
+      <div class="project-card fade-in">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3 data-en="International Hospital Projects" data-tr="Uluslararası Hastane Projeleri">International Hospital Projects</h3>
+        <span class="project-meta">Turkmenistan · Libya</span>
+        <p class="project-desc" data-en="IT infrastructure for Ashgabat Rehabilitation Hospital, Physiology Hospital, and Libya Zliten Hospital. Server, storage, network, and cybersecurity systems." data-tr="Aşkabat Rehabilitasyon Hastanesi, Fizyoloji Hastanesi ve Libya Zliten Hastanesi BT altyapısı. Sunucu, depolama, ağ ve siber güvenlik sistemleri.">IT infrastructure for Ashgabat Rehabilitation Hospital, Physiology Hospital, and Libya Zliten Hospital. Server, storage, network, and cybersecurity systems.</p>
+      </div>
+
+      <!-- Türkmenbaşı Port -->
+      <div class="project-card fade-in">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <h3 data-en="Türkmenbaşı Port" data-tr="Türkmenbaşı Limanı">Türkmenbaşı Port</h3>
+        <span class="project-meta" data-en="IT Infrastructure · 300+ Servers" data-tr="BT Altyapı · 300+ Sunucu">IT Infrastructure · 300+ Servers</span>
+        <p class="project-desc" data-en="IT infrastructure design and integration for one of Central Asia's largest port facilities. 300+ servers, 15 PB storage capacity." data-tr="Orta Asya'nın en büyük liman tesislerinden biri için BT altyapı tasarımı ve entegrasyonu. 300+ sunucu, 15 PB depolama kapasitesi.">IT infrastructure design and integration for one of Central Asia's largest port facilities. 300+ servers, 15 PB storage capacity.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Open Data Section -->
+<section class="section" id="opendata">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="Open Data" data-tr="Açık Veri">Open Data</h2>
+    </div>
+    <div class="opendata-intro fade-in">
+      <p data-en="Committed to promoting data transparency, civic technology, and open government data for public good. Board member at AVTED — Turkey's only NGO dedicated to open data advocacy." data-tr="Veri şeffaflığı, sivil teknoloji ve kamu yararına açık devlet verisini teşvik etmeye adanmış. AVTED — Türkiye'nin açık veri savunuculuğuna adanmış tek STK'sında yönetim kurulu üyesi.">Committed to promoting data transparency, civic technology, and open government data for public good. Board member at AVTED — Turkey's only NGO dedicated to open data advocacy.</p>
+    </div>
+
+    <div class="opendata-grid">
+      <!-- Tuzla Open Data Portal -->
+      <div class="opendata-card fade-in">
+        <div class="opendata-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <h3 data-en="Tuzla Open Data Portal" data-tr="Tuzla Açık Veri Portalı">Tuzla Open Data Portal</h3>
+        <p data-en="Led the development of Turkey's one of the earliest municipal-level open data platforms using CKAN. Designed data lifecycle, metadata management, and automation systems." data-tr="CKAN kullanarak Türkiye'nin ilk belediye düzeyinde açık veri platformlarından birinin geliştirilmesine liderlik etti. Veri yaşam döngüsü, metadata yönetimi ve otomasyon sistemleri tasarlandı.">Led the development of Turkey's one of the earliest municipal-level open data platforms using CKAN. Designed data lifecycle, metadata management, and automation systems.</p>
+        <a href="https://veri.tuzla.bel.tr" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Visit Portal" data-tr="Portalı Ziyaret Et">Visit Portal</a>
+      </div>
+
+      <!-- Open Data Index -->
+      <div class="opendata-card fade-in">
+        <div class="opendata-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <h3 data-en="Open Data Index 2023 & 2024" data-tr="Açık Veri Endeksi 2023 & 2024">Open Data Index 2023 & 2024</h3>
+        <p data-en="Designed and delivered all data visualizations for AVTED's national Local Government Open Data Index reports — scoring municipalities on Readiness, Implementation, and Impact." data-tr="AVTED'in ulusal Yerel Yönetimler Açık Veri Endeksi raporları için tüm veri görselleştirmelerini tasarladı — belediyelerin Hazırlık, Uygulama ve Etki boyutlarındaki raporlama çalışmalarına katkı sağladı.">Designed and delivered all data visualizations for AVTED's national Local Government Open Data Index reports — scoring municipalities on Readiness, Implementation, and Impact.</p>
+        <a href="https://acikveriendeksi.org/en-2023" target="_blank" rel="noopener noreferrer" class="card-link" data-en="View Index" data-tr="Endeksi Gör">View Index</a>
+      </div>
+
+    </div>
+
+    <!-- Açık Veri Topluluğuna Katkı -->
+    <h3 class="about-subsection-title fade-in" data-en="Contributions to Open Data Community" data-tr="Açık Veri Topluluğuna Katkı">Contributions to Open Data Community</h3>
+
+    <div class="opendata-grid">
+      <!-- Open Data Summit 2024 -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-card-poster">
+          <img src="assets/img/open-data-summit-2024.jpg" alt="Açık Veri Zirvesi IV - 29 Mayıs 2024" loading="lazy">
+        </div>
+        <h3 data-en="Open Data Summit 2024" data-tr="Açık Veri Zirvesi 2024">Open Data Summit 2024</h3>
+        <p data-en="Panel moderator at the national Open Data Summit IV. Led discussions on how open data can drive public service improvement and new service creation." data-tr="Ulusal Açık Veri Zirvesi IV'te panel moderatörü. Açık verinin kamu hizmetlerini nasıl iyileştirebileceği üzerine tartışmaları yönetti.">Panel moderator at the national Open Data Summit IV. Led discussions on how open data can drive public service improvement and new service creation.</p>
+        <a href="https://www.youtube.com/watch?v=dLlguSJY_rk" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Watch Panel" data-tr="Paneli İzle">Watch Panel</a>
+      </div>
+
+      <!-- Open Data Summit 2025 -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-card-poster">
+          <img src="assets/img/open-data-summit-2025.jpg" alt="Açık Veri Zirvesi V - 27 Mayıs 2025" loading="lazy">
+        </div>
+        <h3 data-en="Open Data Summit 2025" data-tr="Açık Veri Zirvesi 2025">Open Data Summit 2025</h3>
+        <p data-en="Speaker at the national Open Data Summit V. Contributed to advancing the open data ecosystem and sharing insights on data-driven governance and innovation." data-tr="Ulusal Açık Veri Zirvesi V'te konuşmacı. Veri odaklı yönetişim ve inovasyon konusundaki bilgi birikimini paylaşarak açık veri ekosisteminin gelişimine katkıda bulundu.">Speaker at the national Open Data Summit V. Contributed to advancing the open data ecosystem and sharing insights on data-driven governance and innovation.</p>
+        <a href="https://www.youtube.com/watch?v=gmG4GStSoY4" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Watch Talk" data-tr="Konuşmayı İzle">Watch Talk</a>
+      </div>
+
+      <!-- Open Data Marathon -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-card-poster">
+          <img src="assets/img/open-data-marathon.jpg" alt="Veri Maratonu - 21-22 Ekim 2023" loading="lazy">
+        </div>
+        <h3 data-en="Open Data Marathon" data-tr="Açık Veri Maratonu">Open Data Marathon</h3>
+        <p data-en="Technical mentor at the Open Data-Based Smart City Software Competition organized by AVTED, Tuzla Municipality, and ISTKA. Guided teams on CKAN portal usage, dataset APIs, and civic tech solutions." data-tr="AVTED, Tuzla Belediyesi ve İSTKA işbirliğiyle düzenlenen Açık Veri Temelli Akıllı Şehir Yazılım Yarışması'nda teknik mentor. Ekiplere CKAN portalı kullanımı, dataset API'leri ve sivil teknoloji çözümleri konusunda rehberlik etti.">Technical mentor at the Open Data-Based Smart City Software Competition organized by AVTED, Tuzla Municipality, and ISTKA. Guided teams on CKAN portal usage, dataset APIs, and civic tech solutions.</p>
+        <a href="https://www.maraton.acikveri.dev" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Event Site" data-tr="Etkinlik Sitesi">Event Site</a>
+      </div>
+
+      <!-- Open Access Week 2025 -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-card-poster">
+          <img src="assets/img/open-access-week-2025.jpg" alt="Open Access Week 2025 - Bilgimizin Sahibi Kim?" loading="lazy">
+        </div>
+        <h3 data-en="Open Access Week 2025" data-tr="Açık Erişim Haftası 2025">Open Access Week 2025</h3>
+        <p data-en="Moderator at the international Open Access Week panel 'Who Owns Our Knowledge?' held at Marmara University on October 27, 2025. Organized by AVTED and Marmara University Information Management Club." data-tr="27 Ekim 2025'te Marmara Üniversitesi'nde düzenlenen 'Bilgimizin Sahibi Kim?' panelinde moderatör. AVTED ve Marmara Üniversitesi Bilgi Yönetimi Kulübü işbirliğiyle gerçekleştirildi.">Moderator at the international Open Access Week panel 'Who Owns Our Knowledge?' held at Marmara University on October 27, 2025. Organized by AVTED and Marmara University Information Management Club.</p>
+        <a href="https://www.openaccessweek.org/events/2025/bilgimizin-sahibi-kim-verinin-zinde-akln-gc-zerine-bir-tartma" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Event Page" data-tr="Etkinlik Sayfası">Event Page</a>
+      </div>
+
+      <!-- AVTED Açık Kürsü -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-card-poster">
+          <img src="assets/img/acik-kursu.jpg" alt="AVTED Açık Kürsü - Açık Veri Portalı Nasıl Kurulur?" loading="lazy">
+        </div>
+        <h3>AVTED Açık Kürsü</h3>
+        <p data-en="Episode 45 of the Açık Kürsü program series by AVTED. Discussed how to build an open data portal for institutions and projects, and how to make existing portals more effective." data-tr="AVTED'in Açık Kürsü program serisinin 45. bölümü. Kurumlar ve projeler için açık veri portalı kurulumu ve mevcut portalların daha etkin hale getirilmesi konuşuldu.">Episode 45 of the Açık Kürsü program series by AVTED. Discussed how to build an open data portal for institutions and projects, and how to make existing portals more effective.</p>
+        <a href="https://www.youtube.com/watch?v=TWtPSIMUkas" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Watch Program" data-tr="Programı İzle">Watch Program</a>
+      </div>
+
+      <!-- Open Data Day 2026 -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-card-poster">
+          <img src="assets/img/open-data-day.jpg" alt="Open Data Day 2026 - Açık Veri Kentleri Mutlu Eder Mi?" loading="lazy">
+        </div>
+        <h3>Open Data Day 2026</h3>
+        <p data-en="Live panel on Open Data Day 2026: 'Does Open Data Make Cities Happy?' Co-presented with Dr. Aydın Akpınar of Marmara University, exploring the relationship between open data and urban life." data-tr="Open Data Day 2026 canlı paneli: 'Açık Veri, Kentleri Mutlu Eder mi?' Marmara Üniversitesi Öğretim Üyesi Dr. Aydın Akpınar ile birlikte açık veri ve kent yaşamı ilişkisi ele alındı.">Live panel on Open Data Day 2026: 'Does Open Data Make Cities Happy?' Co-presented with Dr. Aydın Akpınar of Marmara University, exploring the relationship between open data and urban life.</p>
+        <a href="https://www.youtube.com/watch?v=xuijSUWLInQ&t=2105s" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Watch Panel" data-tr="Paneli İzle">Watch Panel</a>
+      </div>
+
+      <!-- TBMM AI Research Commission -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+        </div>
+        <h3 data-en="TBMM AI Research Commission" data-tr="TBMM Yapay Zeka Araştırma Komisyonu">TBMM AI Research Commission</h3>
+        <p data-en="Represented AVTED at the Turkish Grand National Assembly's AI Research Commission on 18 February 2025. Contributed civil society perspectives on data governance, open data, and responsible AI integration into public services." data-tr="18 Şubat 2025'te TBMM Yapay Zeka Araştırma Komisyonu'nda AVTED'i temsil etti. Veri yönetişimi, açık veri ve yapay zekanın kamu hizmetlerine sorumlu entegrasyonu konusunda sivil toplum perspektifini aktardı.">Represented AVTED at the Turkish Grand National Assembly's AI Research Commission on 18 February 2025. Contributed civil society perspectives on data governance, open data, and responsible AI integration into public services.</p>
+        <div class="card-link-group">
+          <a href="https://www.linkedin.com/posts/avtedorg_tbmm-yapay-zeka-komisyonu-yapay-zeka-alan%C4%B1nda-activity-7297649292570193920-oDP2" target="_blank" rel="noopener noreferrer" class="card-link" data-en="LinkedIn Post" data-tr="LinkedIn Paylaşımı">LinkedIn Post</a>
+          <a href="https://avted.org.tr/elementor-3184/" target="_blank" rel="noopener noreferrer" class="card-link" data-en="AVTED Article" data-tr="AVTED Haberi">AVTED Article</a>
+        </div>
+      </div>
+
+      <!-- National AI Summit -->
+      <div class="opendata-card opendata-card--featured fade-in">
+        <div class="opendata-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3 data-en="National AI Summit – From Data to Decision" data-tr="Veriden Karara Ulusal Yapay Zekâ Zirvesi">National AI Summit – From Data to Decision</h3>
+        <p data-en="Represented AVTED at the National AI Summit organized by the TBMM AI Research Commission on 8 May 2025. Sessions covered AI &amp; politics, legal frameworks, ethics, workforce impacts, sectoral applications, and the AI ecosystem." data-tr="8 Mayıs 2025'te TBMM Yapay Zekâ Araştırma Komisyonu tarafından düzenlenen Veriden Karara Ulusal Yapay Zekâ Zirvesi'nde AVTED'i temsil etti. Zirvede yapay zekâ ve siyaset, hukuki çerçeve, etik, işgücü etkileri, sektörel uygulamalar ve yapay zekâ ekosistemi konuları tartışıldı.">Represented AVTED at the National AI Summit organized by the TBMM AI Research Commission on 8 May 2025. Sessions covered AI &amp; politics, legal frameworks, ethics, workforce impacts, sectoral applications, and the AI ecosystem.</p>
+        <div class="card-link-group">
+          <a href="https://avted.org.tr/elementor-3184/" target="_blank" rel="noopener noreferrer" class="card-link" data-en="AVTED Article" data-tr="AVTED Haberi">AVTED Article</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Responsibility Section -->
+<section class="section section--alt" id="social-responsibility">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="Social Responsibility" data-tr="Sosyal Sorumluluk">Social Responsibility</h2>
+    </div>
+    <div class="sr-intro fade-in">
+      <p data-en="Leveraging open data and technology to create meaningful social impact. Developing accessible solutions for underserved communities and contributing to civic technology initiatives." data-tr="Açık veri ve teknolojiyi anlamlı sosyal etki yaratmak için kullanıyor. Dezavantajlı topluluklar için erişilebilir çözümler geliştiriyor ve sivil teknoloji girişimlerine katkı sağlıyor.">Leveraging open data and technology to create meaningful social impact. Developing accessible solutions for underserved communities and contributing to civic technology initiatives.</p>
+    </div>
+
+    <div class="sr-grid">
+      <!-- WellGo -->
+      <div class="sr-card fade-in">
+        <div class="sr-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>
+        </div>
+        <div class="sr-card-content">
+          <h3>WellGo</h3>
+          <span class="sr-card-badge" data-en="Open Data · Mobile App" data-tr="Açık Veri · Mobil Uygulama">Open Data · Mobile App</span>
+          <p data-en="A social responsibility project that uses open government data from municipal portals to locate electric wheelchair charging stations and provide navigation. Built to improve mobility independence for individuals with disabilities." data-tr="Belediye açık veri portallarından elde edilen verileri kullanarak elektrikli tekerlekli sandalye şarj istasyonlarını bulan ve navigasyon sağlayan bir sosyal sorumluluk projesi. Engelli bireylerin hareket bağımsızlığını artırmak için geliştirildi.">A social responsibility project that uses open government data from municipal portals to locate electric wheelchair charging stations and provide navigation. Built to improve mobility independence for individuals with disabilities.</p>
+          <div class="sr-card-links">
+            <a href="https://apps.apple.com/az/app/wellgo/id6448851125" target="_blank" rel="noopener noreferrer" class="card-link">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.tederga.wellgo&hl=en" target="_blank" rel="noopener noreferrer" class="card-link">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+              Google Play
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Engelsizsarj.com -->
+      <div class="sr-card fade-in">
+        <div class="sr-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="sr-card-content">
+          <h3>Engelsizsarj.com</h3>
+          <span class="sr-card-badge" data-en="Civic Tech · Accessibility" data-tr="Sivil Teknoloji · Erişilebilirlik">Civic Tech · Accessibility</span>
+          <p data-en="Contributing to the Engelsizsarj.com project by AVTED (Open Data and Technology Association), realized with the support of the General Directorate of Civil Society. A platform dedicated to mapping accessible charging infrastructure for people with disabilities." data-tr="Açık Veri ve Teknoloji Derneği (AVTED) tarafından Sivil Toplum Genel Müdürlüğü desteğiyle gerçekleştirilen Engelsizsarj.com projesine katkı sağlamaktadır. Engelli bireyler için erişilebilir şarj altyapısını haritalandırmaya adanmış bir platform.">Contributing to the Engelsizsarj.com project by AVTED (Open Data and Technology Association), realized with the support of the General Directorate of Civil Society. A platform dedicated to mapping accessible charging infrastructure for people with disabilities.</p>
+          <div class="sr-card-links">
+            <a href="https://www.engelsizsarj.com" target="_blank" rel="noopener noreferrer" class="card-link" data-en="Visit Website" data-tr="Siteyi Ziyaret Et">Visit Website</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission Section -->
+<section class="section" id="mission">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="Mission" data-tr="Misyon">Mission</h2>
+    </div>
+
+    <div class="mission-content">
+      <div class="mission-card fade-in">
+        <blockquote>
+          <p data-en="&ldquo;My mission is to contribute to digital transformation through civic technology, open data platforms, and scalable SaaS solutions. I believe in harnessing the power of technology to generate public value and improve service delivery, especially where innovation can bridge the gap between institutions and communities.&rdquo;" data-tr="&ldquo;Misyonum, sivil teknoloji, açık veri platformları ve ölçeklenebilir SaaS çözümleri aracılığıyla dijital dönüşüme katkıda bulunmaktır. Teknolojinin gücünü kamusal değer üretmek ve hizmet sunumunu iyileştirmek için kullanmaya inanıyorum — özellikle inovasyonun kurumlar ve topluluklar arasındaki köprüyü kurabileceği alanlarda.&rdquo;">&ldquo;My mission is to contribute to digital transformation through civic technology, open data platforms, and scalable SaaS solutions. I believe in harnessing the power of technology to generate public value and improve service delivery, especially where innovation can bridge the gap between institutions and communities.&rdquo;</p>
+        </blockquote>
+      </div>
+
+      <div class="mission-pillars fade-in">
+        <div class="pillar">
+          <div class="pillar-number">01</div>
+          <h3 data-en="Transparency & Open Data" data-tr="Şeffaflık & Açık Veri">Transparency & Open Data</h3>
+          <p data-en="Driving data accessibility, promoting ethical data sharing, and building platforms that empower civic engagement and informed decision-making." data-tr="Veri erişilebilirliğini artırma, etik veri paylaşımını teşvik etme ve sivil katılımı güçlendiren platformlar inşa etme.">Driving data accessibility, promoting ethical data sharing, and building platforms that empower civic engagement and informed decision-making.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-number">02</div>
+          <h3 data-en="Innovation & Technology" data-tr="İnovasyon & Teknoloji">Innovation & Technology</h3>
+          <p data-en="Building scalable SaaS solutions and cloud-native platforms that solve real problems — from fitness apps serving thousands to accessibility tools for underserved communities." data-tr="Gerçek sorunları çözen ölçeklenebilir SaaS çözümleri ve bulut-yerel platformlar inşa etme — binlerce kişiye hizmet veren fitness uygulamalarından dezavantajlı topluluklar için erişilebilirlik araçlarına.">Building scalable SaaS solutions and cloud-native platforms that solve real problems — from fitness apps serving thousands to accessibility tools for underserved communities.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-number">03</div>
+          <h3 data-en="Mentorship & Inclusion" data-tr="Mentorluk & Kapsayıcılık">Mentorship & Inclusion</h3>
+          <p data-en="Nurturing the next generation of tech professionals through hands-on mentorship, creating pathways for emerging talent, and making digital transformation inclusive and sustainable." data-tr="Uygulamalı mentorluk yoluyla yeni nesil teknoloji profesyonellerini yetiştirme, yeni yetenekler için yollar oluşturma ve dijital dönüşümü kapsayıcı ve sürdürülebilir kılma.">Nurturing the next generation of tech professionals through hands-on mentorship, creating pathways for emerging talent, and making digital transformation inclusive and sustainable.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="section section-alt" id="contact">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 class="section-title" data-en="Contact" data-tr="İletişim">Contact</h2>
+    </div>
+
+    <div class="contact-grid fade-in">
+      <p class="contact-intro" data-en="Let's connect. Whether it's about technology, open data, or collaboration opportunities — I'd love to hear from you." data-tr="İletişime geçelim. Teknoloji, açık veri veya iş birliği fırsatları hakkında olsun — sizden haber almak isterim.">Let's connect. Whether it's about technology, open data, or collaboration opportunities — I'd love to hear from you.</p>
+
+      <div class="contact-items">
+        <a href="mailto:gatabay@tederga.com" class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <span class="contact-label">Email</span>
+            <span class="contact-value">gatabay@tederga.com</span>
+          </div>
+        </a>
+
+        <a href="https://www.linkedin.com/in/gurkan-atabay/" target="_blank" rel="noopener noreferrer" class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </div>
+          <div>
+            <span class="contact-label">LinkedIn</span>
+            <span class="contact-value">linkedin.com/in/gurkan-atabay</span>
+          </div>
+        </a>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          </div>
+          <div>
+            <span class="contact-label" data-en="Company" data-tr="Şirket">Company</span>
+            <span class="contact-value">Tederga Bilişim</span>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <span class="contact-label" data-en="Location" data-tr="Konum">Location</span>
+            <span class="contact-value" data-en="Istanbul, Turkey | GOSB Teknopark" data-tr="İstanbul, Türkiye | GOSB Teknopark">Istanbul, Turkey | GOSB Teknopark</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span class="footer-logo">GA</span>
+        <p class="footer-tagline" data-en="Technology for a better tomorrow" data-tr="Daha iyi bir yarın için teknoloji">Technology for a better tomorrow</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://linkedin.com/in/gurkanatabay" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://github.com/gurkanatabay" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+      </div>
+      <p class="footer-copyright">
+        &copy; 2026 Gürkan Atabay / Tederga Bilişim
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/language.js"></script>
+<script src="assets/js/animations.js"></script>
+</body>
+</html>
