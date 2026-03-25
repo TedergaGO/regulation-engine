@@ -1007,13 +1007,29 @@ router.post('/policy/save', requireAuth, async (req: Request, res: Response) => 
     let policyId: number;
     let newVersion: string;
 
+    // Compute next_review_date from document
+    const reviewPeriod: string = (document as any)?.reviewPeriod || '';
+    const explicitDate: string = (document as any)?.nextReviewDate || '';
+    let nextReviewDate: string | null = null;
+    if (explicitDate) {
+      nextReviewDate = explicitDate;
+    } else if (reviewPeriod) {
+      const monthMap: Record<string, number> = { 'Yıllık': 12, '6 Aylık': 6, '2 Yıllık': 24, '3 Yıllık': 36 };
+      const months = monthMap[reviewPeriod];
+      if (months) {
+        const d = new Date();
+        d.setMonth(d.getMonth() + months);
+        nextReviewDate = d.toISOString().split('T')[0];
+      }
+    }
+
     if (existingResult.rows.length === 0) {
       newVersion = '1.0';
       const insertResult = await client.query(
-        `INSERT INTO policies (tenant_id, standard_id, ref_no, control_title, current_version, last_modified_by, last_modified_at, doc_type)
-         VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7)
+        `INSERT INTO policies (tenant_id, standard_id, ref_no, control_title, current_version, last_modified_by, last_modified_at, doc_type, next_review_date)
+         VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7, $8)
          RETURNING id`,
-        [tenantId, standardId, refNo, controlTitle || '', newVersion, author, docTypeVal]
+        [tenantId, standardId, refNo, controlTitle || '', newVersion, author, docTypeVal, nextReviewDate]
       );
       policyId = insertResult.rows[0].id;
     } else {
@@ -1021,8 +1037,9 @@ router.post('/policy/save', requireAuth, async (req: Request, res: Response) => 
       policyId = existing.id;
       newVersion = bumpVersion(existing.current_version);
       await client.query(
-        'UPDATE policies SET current_version = $1, last_modified_by = $2, last_modified_at = NOW(), control_title = $3 WHERE id = $4',
-        [newVersion, author, controlTitle || existing.control_title, policyId]
+        `UPDATE policies SET current_version = $1, last_modified_by = $2, last_modified_at = NOW(),
+         control_title = $3, next_review_date = COALESCE($5, next_review_date) WHERE id = $4`,
+        [newVersion, author, controlTitle || existing.control_title, policyId, nextReviewDate]
       );
     }
 
@@ -1282,6 +1299,186 @@ router.delete('/policy/files/:fileId', async (req: Request, res: Response) => {
     const filePath = path.join(POLICY_FILES_DIR, result.rows[0].stored_name);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ── CONTROL COMPLETIONS ───────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+// GET /controls/completion/:standardId — fetch all completion statuses
+router.get('/controls/completion/:standardId', requireAuth, async (req: Request, res: Response) => {
+  const tenantId = req.tenantId || 1;
+  try {
+    const result = await pool.query(
+      `SELECT ref_no, is_completed, completed_at, completed_by, notes
+       FROM control_completions
+       WHERE tenant_id = $1 AND standard_id::varchar = $2`,
+      [tenantId, req.params.standardId]
+    );
+    const map: Record<string, any> = {};
+    for (const row of result.rows) {
+      map[row.ref_no] = {
+        isCompleted: row.is_completed,
+        completedAt: row.completed_at,
+        completedBy: row.completed_by,
+        notes: row.notes,
+      };
+    }
+    res.json({ completions: map });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH /controls/completion — upsert single control completion
+router.patch('/controls/completion', requireAuth, async (req: Request, res: Response) => {
+  const tenantId = req.tenantId || 1;
+  const { standardId, refNo, isCompleted, notes } = req.body;
+  if (!standardId || !refNo) { res.status(400).json({ error: 'standardId ve refNo zorunlu' }); return; }
+  const completedBy = req.user!.fullName;
+  try {
+    const result = await pool.query(
+      `INSERT INTO control_completions (tenant_id, standard_id, ref_no, is_completed, completed_at, completed_by, notes, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+       ON CONFLICT (tenant_id, standard_id, ref_no)
+       DO UPDATE SET is_completed = $4, completed_at = $5, completed_by = $6, notes = $7, updated_at = NOW()
+       RETURNING *`,
+      [tenantId, standardId, refNo, isCompleted, isCompleted ? new Date() : null, completedBy, notes || '']
+    );
+    res.json({ success: true, completion: result.rows[0] });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /report/completion — full completion report (all standards)
+router.get('/report/completion', requireAuth, async (req: Request, res: Response) => {
+  const tenantId = req.tenantId || 1;
+  try {
+    // Get all standards with controls
+    const stdsResult = await pool.query(
+      `SELECT s.id, s.name, s.short_name, s.icon, s.color,
+              COUNT(c.id) AS total_controls
+       FROM standards s
+       LEFT JOIN controls c ON c.standard_id = s.id AND c.tenant_id = $1
+       WHERE s.tenant_id = $1
+       GROUP BY s.id, s.name, s.short_name, s.icon, s.color ORDER BY s.name`,
+      [tenantId]
+    );
+
+    // Get all completions
+    const compResult = await pool.query(
+      `SELECT standard_id, ref_no, is_completed, completed_at, completed_by
+       FROM control_completions
+       WHERE tenant_id = $1`,
+      [tenantId]
+    );
+
+    // Group completions by standard
+    const compMap: Record<number, { completed: number; total: number; items: any[] }> = {};
+    for (const row of compResult.rows) {
+      if (!compMap[row.standard_id]) compMap[row.standard_id] = { completed: 0, total: 0, items: [] };
+      compMap[row.standard_id].items.push(row);
+      if (row.is_completed) compMap[row.standard_id].completed++;
+    }
+
+    const standards = stdsResult.rows.map((s: any) => {
+      const comp = compMap[s.id] || { completed: 0, total: 0, items: [] };
+      const total = parseInt(s.total_controls) || 0;
+      return {
+        id: s.id,
+        name: s.name,
+        shortName: s.short_name,
+        icon: s.icon,
+        color: s.color,
+        totalControls: total,
+        completedControls: comp.completed,
+        rate: total > 0 ? Math.round((comp.completed / total) * 100) : 0,
+      };
+    });
+
+    // Get all controls with their completion status
+    const ctrlResult = await pool.query(
+      `SELECT c.standard_id, c.ref_no, c.title, c.category, c.type, c.priority,
+              cc.is_completed, cc.completed_at, cc.completed_by
+       FROM controls c
+       LEFT JOIN control_completions cc ON cc.tenant_id = $1
+         AND cc.standard_id::varchar = c.standard_id
+         AND cc.ref_no = c.ref_no
+       WHERE c.tenant_id = $1
+       ORDER BY c.standard_id, c.ref_no`,
+      [tenantId]
+    );
+
+    const totalControls = ctrlResult.rowCount || 0;
+    const totalCompleted = ctrlResult.rows.filter((r: any) => r.is_completed).length;
+
+    res.json({
+      summary: { totalControls, totalCompleted, totalIncomplete: totalControls - totalCompleted, rate: totalControls > 0 ? Math.round((totalCompleted / totalControls) * 100) : 0 },
+      standards,
+      controls: ctrlResult.rows,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ── UPCOMING REVIEWS (ALERTS) ────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+// GET /alerts/upcoming — policies with review dates approaching (30/60/90 days) or overdue
+router.get('/alerts/upcoming', requireAuth, async (req: Request, res: Response) => {
+  const tenantId = req.tenantId || 1;
+  try {
+    const result = await pool.query(
+      `SELECT p.id, p.standard_id, p.ref_no, p.control_title, p.doc_type,
+              p.current_version, p.last_modified_by, p.last_modified_at, p.next_review_date,
+              s.name AS standard_name, s.icon AS standard_icon,
+              pv.document
+       FROM policies p
+       JOIN standards s ON s.id = p.standard_id AND s.tenant_id = $1
+       LEFT JOIN policy_versions pv ON pv.policy_id = p.id AND pv.version = p.current_version
+       WHERE p.tenant_id = $1
+         AND p.next_review_date IS NOT NULL
+         AND p.next_review_date <= CURRENT_DATE + INTERVAL '90 days'
+       ORDER BY p.next_review_date ASC`,
+      [tenantId]
+    );
+
+    const today = new Date();
+    const alerts = result.rows.map((row: any) => {
+      const reviewDate = new Date(row.next_review_date);
+      const daysUntil = Math.ceil((reviewDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      let urgency: 'overdue' | 'critical' | 'warning' | 'info';
+      if (daysUntil < 0)  urgency = 'overdue';
+      else if (daysUntil <= 7)  urgency = 'critical';
+      else if (daysUntil <= 30) urgency = 'warning';
+      else urgency = 'info';
+      return {
+        id: row.id,
+        standardId: row.standard_id,
+        standardName: row.standard_name,
+        standardIcon: row.standard_icon,
+        refNo: row.ref_no,
+        controlTitle: row.control_title,
+        docType: row.doc_type,
+        currentVersion: row.current_version,
+        lastModifiedBy: row.last_modified_by,
+        nextReviewDate: row.next_review_date,
+        daysUntil,
+        urgency,
+      };
+    });
+
+    const overdue  = alerts.filter((a: any) => a.urgency === 'overdue').length;
+    const critical = alerts.filter((a: any) => a.urgency === 'critical').length;
+    const warning  = alerts.filter((a: any) => a.urgency === 'warning').length;
+
+    res.json({ alerts, summary: { overdue, critical, warning, total: alerts.length } });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

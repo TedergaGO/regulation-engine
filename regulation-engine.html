@@ -402,6 +402,39 @@ tr:hover td{background:var(--surface2)}
   color:var(--text);font-size:13px;outline:none;
 }
 .pe-input:focus{border-color:var(--blue)}
+
+/* ── Completion checkbox ── */
+.ctrl-check{width:17px;height:17px;cursor:pointer;accent-color:var(--accent)}
+.ctrl-row-done td{opacity:.55}
+.ctrl-row-done .ctrl-title{text-decoration:line-through;color:var(--text3)}
+.completion-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:6px}
+.completion-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.completion-label{font-size:11px;color:var(--text2);margin-top:4px;display:flex;justify-content:space-between}
+
+/* ── Alert badges ── */
+.alert-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.urgency-overdue{background:var(--red);color:var(--red)}
+.urgency-critical{background:#f97316;color:#f97316}
+.urgency-warning{background:var(--yellow);color:var(--yellow)}
+.urgency-info{background:var(--blue2);color:var(--blue2)}
+.alert-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.alert-card.overdue{border-left:3px solid var(--red)}
+.alert-card.critical{border-left:3px solid #f97316}
+.alert-card.warning{border-left:3px solid var(--yellow)}
+.alert-card.info{border-left:3px solid var(--blue2)}
+.alert-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.pill-overdue{background:#3d0c0c;color:var(--red);border:1px solid var(--red)}
+.pill-critical{background:#2d1a00;color:#f97316;border:1px solid #f97316}
+.pill-warning{background:#2a2000;color:var(--yellow);border:1px solid var(--orange)}
+.pill-info{background:#0c1d3a;color:var(--blue2);border:1px solid var(--blue)}
+#alert-topbar-badge{display:none;background:var(--red);color:#fff;font-size:10px;font-weight:700;
+  padding:2px 6px;border-radius:999px;margin-left:-4px;vertical-align:top}
+
+/* ── Report page ── */
+.report-std-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+.report-progress{flex:1}
+.report-filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
 </style>
 </head>
 <body>
@@ -430,6 +463,8 @@ tr:hover td{background:var(--surface2)}
     <button class="nav-btn" onclick="showPage('matrix')">Uyum Matrisi</button>
     <button class="nav-btn" onclick="showPage('crossref')">Ortak Kontroller</button>
     <button class="nav-btn" onclick="showPage('domains')">Sektör Domainleri</button>
+    <button class="nav-btn" onclick="showPage('report')">📊 Raporlar</button>
+    <button class="nav-btn" onclick="showPage('alerts')" style="position:relative">🔔 Yaklaşanlar<span id="alert-topbar-badge"></span></button>
     <button class="nav-btn admin-only" id="nav-settings" onclick="showPage('settings')" style="display:none">⚙️ Ayarlar</button>
   </nav>
   <div class="topbar-actions">
@@ -470,6 +505,15 @@ tr:hover td{background:var(--surface2)}
     <div class="stat-card">
       <div class="stat-value" id="stat-mandatory">—</div>
       <div class="stat-label">Zorunlu Kontrol</div>
+    </div>
+    <div class="stat-card" style="cursor:pointer" onclick="showPage('report')">
+      <div class="stat-value" id="stat-completed" style="color:var(--accent)">—</div>
+      <div class="stat-label">Tamamlanan Kontrol</div>
+      <div class="completion-bar" style="margin-top:8px"><div class="completion-fill" id="stat-comp-fill" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card" style="cursor:pointer" onclick="showPage('alerts')">
+      <div class="stat-value" id="stat-alerts" style="color:var(--red)">—</div>
+      <div class="stat-label">Yaklaşan Gözden Geçirme</div>
     </div>
     <div class="stat-card">
       <div class="stat-value" id="stat-uploaded">—</div>
@@ -530,6 +574,20 @@ tr:hover td{background:var(--surface2)}
       <option value="TAVSİYE">Tavsiye</option>
     </select>
     <span class="result-count" id="ctrl-count"></span>
+    <select class="filter-select" id="ctrl-comp-filter" onchange="filterControls()" style="margin-left:auto">
+      <option value="">Tüm Durum</option>
+      <option value="done">✅ Tamamlanan</option>
+      <option value="todo">⬜ Tamamlanmayan</option>
+    </select>
+  </div>
+
+  <!-- Progress -->
+  <div id="controls-progress-bar" style="margin-bottom:14px;display:none">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px">
+      <span id="controls-progress-label">Tamamlama durumu</span>
+      <span id="controls-progress-pct" style="font-weight:600;color:var(--accent)"></span>
+    </div>
+    <div class="completion-bar"><div class="completion-fill" id="controls-progress-fill" style="width:0%"></div></div>
   </div>
 
   <!-- Table -->
@@ -537,14 +595,15 @@ tr:hover td{background:var(--surface2)}
     <table id="controls-table">
       <thead>
         <tr>
+          <th style="width:38px" title="Tamamlandı mı?">✓</th>
           <th style="width:50px">#</th>
           <th style="width:120px">REF NO</th>
-          <th style="width:200px">KATEGORİ</th>
+          <th style="width:180px">KATEGORİ</th>
           <th style="width:200px">KONTROL BAŞLIĞI</th>
           <th>KONTROL AÇIKLAMASI</th>
-          <th style="width:100px">TİP</th>
-          <th style="width:120px">ÖNCELİK</th>
-          <th style="width:80px">POLİTİKA</th>
+          <th style="width:90px">TİP</th>
+          <th style="width:100px">ÖNCELİK</th>
+          <th style="width:70px">POLİTİKA</th>
         </tr>
       </thead>
       <tbody id="controls-tbody">
@@ -662,6 +721,120 @@ tr:hover td{background:var(--surface2)}
 </div>
 
 <!-- ══════════════ PAGE: SETTINGS ══════════════ -->
+<!-- ══════════════ RAPOR PAGE ══════════════ -->
+<div id="page-report" class="page">
+<div class="container">
+  <div class="section-header" style="margin-bottom:20px">
+    <div>
+      <div class="section-title">📊 Tamamlanma Raporu</div>
+      <div class="section-sub">Kontrol bazında tamamlananlar ve eksikler</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="loadReportPage()">🔄 Yenile</button>
+      <button class="btn btn-secondary btn-sm" onclick="exportCompletionReport()">📥 Excel İndir</button>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="stats-row" style="margin-bottom:20px">
+    <div class="stat-card">
+      <div class="stat-value" id="rpt-total" style="color:var(--text)">—</div>
+      <div class="stat-label">Toplam Kontrol</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="rpt-done" style="color:var(--accent)">—</div>
+      <div class="stat-label">Tamamlanan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="rpt-todo" style="color:var(--orange)">—</div>
+      <div class="stat-label">Tamamlanmayan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="rpt-rate" style="color:var(--blue2)">—</div>
+      <div class="stat-label">Genel Oran</div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="report-filter-bar">
+    <select id="rpt-filter-std" class="filter-select" onchange="filterReport()" style="width:220px">
+      <option value="">Tüm Standartlar</option>
+    </select>
+    <select id="rpt-filter-status" class="filter-select" onchange="filterReport()" style="width:160px">
+      <option value="">Tüm Durum</option>
+      <option value="done">✅ Tamamlanan</option>
+      <option value="todo">⬜ Tamamlanmayan</option>
+    </select>
+    <input id="rpt-search" class="pe-input" placeholder="🔍 Kontrol ara…" style="width:220px;flex:none" oninput="filterReport()"/>
+    <span id="rpt-count" style="font-size:12px;color:var(--text2);margin-left:auto"></span>
+  </div>
+
+  <!-- Standard progress rows -->
+  <div id="rpt-std-rows" style="margin-bottom:20px"></div>
+
+  <!-- Control table -->
+  <div class="table-wrapper">
+    <table class="controls-table" style="width:100%">
+      <thead><tr>
+        <th style="width:32px"></th>
+        <th>Ref No</th>
+        <th>Standart</th>
+        <th>Kontrol Başlığı</th>
+        <th>Kategori</th>
+        <th>Tamamlayan</th>
+        <th>Tarih</th>
+      </tr></thead>
+      <tbody id="rpt-tbody"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ ALERTS PAGE ══════════════ -->
+<div id="page-alerts" class="page">
+<div class="container">
+  <div class="section-header" style="margin-bottom:20px">
+    <div>
+      <div class="section-title">🔔 Yaklaşan Gözden Geçirmeler</div>
+      <div class="section-sub">Güncelleme tarihi 90 gün içinde olan veya gecikmiş politikalar</div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="loadAlertsPage()">🔄 Yenile</button>
+  </div>
+
+  <!-- Summary -->
+  <div class="stats-row" style="margin-bottom:20px">
+    <div class="stat-card"><div class="stat-value" id="alrt-overdue" style="color:var(--red)">—</div><div class="stat-label">⚠️ Gecikmiş</div></div>
+    <div class="stat-card"><div class="stat-value" id="alrt-critical" style="color:#f97316">—</div><div class="stat-label">🔴 7 Gün İçinde</div></div>
+    <div class="stat-card"><div class="stat-value" id="alrt-warning" style="color:var(--yellow)">—</div><div class="stat-label">🟡 30 Gün İçinde</div></div>
+    <div class="stat-card"><div class="stat-value" id="alrt-info" style="color:var(--blue2)">—</div><div class="stat-label">🔵 90 Gün İçinde</div></div>
+  </div>
+
+  <!-- Filter -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <select id="alrt-filter" class="filter-select" onchange="filterAlerts()" style="width:180px">
+      <option value="">Tüm Durumlar</option>
+      <option value="overdue">Gecikmiş</option>
+      <option value="critical">Kritik (7 gün)</option>
+      <option value="warning">Uyarı (30 gün)</option>
+      <option value="info">Bilgi (90 gün)</option>
+    </select>
+    <select id="alrt-filter-type" class="filter-select" onchange="filterAlerts()" style="width:160px">
+      <option value="">Tüm Tipler</option>
+      <option value="policy">📋 Politika</option>
+      <option value="procedure">📑 Prosedür</option>
+      <option value="checklist">✅ Kontrol Listesi</option>
+      <option value="raci">👥 RACI</option>
+      <option value="revision">🔄 Revizyon</option>
+    </select>
+  </div>
+
+  <div id="alrt-list">
+    <div style="text-align:center;padding:40px;color:var(--text2)"><div class="spinner" style="margin:0 auto 12px"></div>Yükleniyor…</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ SETTINGS PAGE ══════════════ -->
 <div id="page-settings" class="page">
 <div class="container">
   <div class="section-header" style="margin-bottom:24px">
@@ -1057,9 +1230,12 @@ async function exportPoliciesPdf(standardId) {
 }
 
 // ── State ────────────────────────────────────────────────────────────────────
-let allStandards   = [];
-let currentStdId   = null;
-let allControls    = [];
+let allStandards      = [];
+let currentStdId      = null;
+let allControls       = [];
+let currentCompletions = {}; // { [refNo]: { isCompleted, completedBy, completedAt } }
+let reportData        = null;
+let alertsData        = null;
 let selectedMatrix = new Set();
 let lastMatrix     = null;
 let crossRefLoaded = false;
@@ -1077,6 +1253,8 @@ function showPage(name) {
   if (name === 'crossref' && !crossRefLoaded) loadCrossRef();
   if (name === 'domains'  && !domainsLoaded)  loadDomains();
   if (name === 'settings') loadSettingsPage();
+  if (name === 'report')   loadReportPage();
+  if (name === 'alerts')   loadAlertsPage();
 }
 
 // ── Toast ────────────────────────────────────────────────────────────────────
@@ -1097,6 +1275,25 @@ async function loadStandards() {
     renderDashboard();
     renderControlsSelector();
     renderMatrixSelector();
+    // Load completion stats and alerts in background
+    Promise.all([
+      apiFetch('/api/regulation/report/completion').then(r => r.ok ? r.json() : null),
+      apiFetch('/api/regulation/alerts/upcoming').then(r => r.ok ? r.json() : null),
+    ]).then(([comp, alrt]) => {
+      if (comp) {
+        reportData = comp;
+        const el = document.getElementById('stat-completed');
+        const fill = document.getElementById('stat-comp-fill');
+        if (el)   el.textContent   = `${comp.summary.totalCompleted} / ${comp.summary.totalControls}`;
+        if (fill) fill.style.width = comp.summary.rate + '%';
+      }
+      if (alrt) {
+        alertsData = alrt;
+        const el = document.getElementById('stat-alerts');
+        if (el) el.textContent = alrt.summary.total;
+        updateAlertBadge(alrt.summary);
+      }
+    }).catch(() => {});
   } catch (e) {
     toast('Standartlar yüklenemedi: ' + e.message, 'error');
   }
@@ -1250,10 +1447,14 @@ async function selectControlsStandard(id) {
   document.getElementById('btn-export-controls').disabled = true;
 
   try {
-    const resp = await apiFetch(`/api/regulation/standards/${id}/controls`);
-    if (!resp.ok) throw new Error((await resp.json()).error || 'Hata');
-    const data = await resp.json();
+    const [ctrlResp, compResp] = await Promise.all([
+      apiFetch(`/api/regulation/standards/${id}/controls`),
+      apiFetch(`/api/regulation/controls/completion/${encodeURIComponent(id)}`),
+    ]);
+    if (!ctrlResp.ok) throw new Error((await ctrlResp.json()).error || 'Hata');
+    const data = await ctrlResp.json();
     allControls = data.controls;
+    currentCompletions = compResp.ok ? (await compResp.json()).completions || {} : {};
 
     // Populate category filter
     const cats = [...new Set(allControls.map(c => c.category))];
@@ -1262,6 +1463,7 @@ async function selectControlsStandard(id) {
       cats.map(c => `<option value="${c}">${c}</option>`).join('');
 
     renderControlsTable(allControls);
+    renderControlsProgress();
     document.getElementById('btn-export-controls').disabled = false;
   } catch (e) {
     tbody.innerHTML = `<tr class="loading-row"><td colspan="7">
@@ -1277,12 +1479,15 @@ function filterControls() {
   const cat  = document.getElementById('ctrl-category').value;
   const pri  = document.getElementById('ctrl-priority').value;
   const type = document.getElementById('ctrl-type').value;
+  const comp = document.getElementById('ctrl-comp-filter')?.value || '';
 
   const filtered = allControls.filter(c => {
     if (q && !c.title.toLowerCase().includes(q) && !c.description.toLowerCase().includes(q) && !c.refNo.toLowerCase().includes(q)) return false;
     if (cat && c.category !== cat) return false;
     if (pri && !c.priority.includes(pri)) return false;
     if (type && c.type !== type) return false;
+    if (comp === 'done' && !currentCompletions?.[c.refNo]?.isCompleted) return false;
+    if (comp === 'todo' && currentCompletions?.[c.refNo]?.isCompleted) return false;
     return true;
   });
   renderControlsTable(filtered);
@@ -1293,19 +1498,27 @@ function renderControlsTable(controls) {
   const tbody = document.getElementById('controls-tbody');
 
   if (controls.length === 0) {
-    tbody.innerHTML = `<tr class="loading-row"><td colspan="7">
+    tbody.innerHTML = `<tr class="loading-row"><td colspan="9">
       <div class="empty-state"><div class="empty-icon">🔍</div>
         <h3>Sonuç Bulunamadı</h3><p>Filtreleri değiştirmeyi deneyin</p>
       </div></td></tr>`;
     return;
   }
 
-  tbody.innerHTML = controls.map((c, i) => `
-    <tr>
+  tbody.innerHTML = controls.map((c, i) => {
+    const comp = currentCompletions?.[c.refNo];
+    const done = comp?.isCompleted || false;
+    const rowClass = done ? 'ctrl-row-done' : '';
+    return `<tr class="${rowClass}" id="ctrl-row-${escAttr(c.refNo)}">
+      <td style="text-align:center">
+        <input type="checkbox" class="ctrl-check" ${done?'checked':''}
+          onchange="toggleCompletion('${escAttr(c.refNo)}',this.checked)"
+          title="${done?('✅ '+escAttr(comp?.completedBy||'')+(comp?.completedAt?' · '+String(comp.completedAt).slice(0,10):'')):'Tamamlandı olarak işaretle'}"/>
+      </td>
       <td style="color:var(--text3)">${i + 1}</td>
       <td><span class="ref-badge">${escHtml(c.refNo)}</span></td>
       <td style="color:var(--text2);font-size:12px">${escHtml(c.category)}</td>
-      <td style="font-weight:500">${escHtml(c.title)}</td>
+      <td class="ctrl-title" style="font-weight:500">${escHtml(c.title)}</td>
       <td style="color:var(--text2);font-size:12px;line-height:1.5">${escHtml(c.description)}</td>
       <td><span class="type-tag ${c.type === 'ZORUNLU' ? 'type-zorunlu' : 'type-tavsiye'}">${escHtml(c.type)}</span></td>
       <td class="priority-tag" style="font-size:12px">${escHtml(c.priority)}</td>
@@ -1315,8 +1528,22 @@ function renderControlsTable(controls) {
           📄
         </button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
+}
+
+function renderControlsProgress() {
+  const total = allControls.length;
+  if (!total) return;
+  const done = allControls.filter(c => currentCompletions?.[c.refNo]?.isCompleted).length;
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('controls-progress-bar');
+  if (bar) {
+    bar.style.display = 'block';
+    document.getElementById('controls-progress-label').textContent = `${done} / ${total} kontrol tamamlandı`;
+    document.getElementById('controls-progress-pct').textContent = `%${pct}`;
+    document.getElementById('controls-progress-fill').style.width = pct + '%';
+  }
 }
 
 function openStandardControls(id) {
@@ -2184,6 +2411,225 @@ async function deletePolicyFile(fileId) {
 }
 
 function closePolicyModal() { document.getElementById('policy-modal').classList.remove('open'); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ── COMPLETION TRACKING ───────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function toggleCompletion(refNo, isCompleted) {
+  if (!currentStdId) return;
+  try {
+    const resp = await apiFetch('/api/regulation/controls/completion', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ standardId: currentStdId, refNo, isCompleted }),
+    });
+    if (!resp.ok) { toast('Güncelleme hatası', 'error'); return; }
+    // Update local state
+    if (!currentCompletions) currentCompletions = {};
+    if (isCompleted) {
+      currentCompletions[refNo] = { isCompleted: true, completedBy: currentUser?.fullName || '', completedAt: new Date().toISOString() };
+    } else {
+      currentCompletions[refNo] = { isCompleted: false, completedBy: '', completedAt: null };
+    }
+    // Update row style
+    const row = document.getElementById(`ctrl-row-${refNo}`);
+    if (row) row.className = isCompleted ? 'ctrl-row-done' : '';
+    renderControlsProgress();
+    toast(isCompleted ? '✅ Tamamlandı olarak işaretlendi' : '⬜ Tamamlanmadı olarak güncellendi', 'success');
+    // Refresh dashboard completion stat
+    updateDashboardCompletionStat();
+  } catch(e) { toast('Hata: ' + e.message, 'error'); }
+}
+
+async function updateDashboardCompletionStat() {
+  try {
+    const resp = await apiFetch('/api/regulation/report/completion');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const el = document.getElementById('stat-completed');
+    const fill = document.getElementById('stat-comp-fill');
+    if (el) el.textContent = `${data.summary.totalCompleted} / ${data.summary.totalControls}`;
+    if (fill) fill.style.width = data.summary.rate + '%';
+  } catch(e) {}
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ── REPORT PAGE ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadReportPage() {
+  try {
+    const resp = await apiFetch('/api/regulation/report/completion');
+    if (!resp.ok) throw new Error('Rapor yüklenemedi');
+    reportData = await resp.json();
+    renderReportPage();
+    // Populate std filter
+    const sel = document.getElementById('rpt-filter-std');
+    if (sel) {
+      sel.innerHTML = '<option value="">Tüm Standartlar</option>' +
+        reportData.standards.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+    }
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function renderReportPage() {
+  if (!reportData) return;
+  const { summary, standards, controls } = reportData;
+  // Summary cards
+  document.getElementById('rpt-total').textContent = summary.totalControls;
+  document.getElementById('rpt-done').textContent  = summary.totalCompleted;
+  document.getElementById('rpt-todo').textContent  = summary.totalIncomplete;
+  document.getElementById('rpt-rate').textContent  = `%${summary.rate}`;
+  // Dashboard stat
+  const statEl   = document.getElementById('stat-completed');
+  const statFill = document.getElementById('stat-comp-fill');
+  if (statEl)   statEl.textContent = `${summary.totalCompleted} / ${summary.totalControls}`;
+  if (statFill) statFill.style.width = summary.rate + '%';
+
+  // Standard progress rows
+  const stdRows = document.getElementById('rpt-std-rows');
+  if (stdRows) {
+    stdRows.innerHTML = standards.map(s => `
+      <div class="report-std-row">
+        <span style="font-size:18px">${escHtml(s.icon||'📋')}</span>
+        <div class="report-progress">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+            <span style="font-weight:600">${escHtml(s.name)}</span>
+            <span style="color:var(--text2)">${s.completedControls} / ${s.totalControls} <span style="color:var(--accent);font-weight:600">%${s.rate}</span></span>
+          </div>
+          <div class="completion-bar"><div class="completion-fill" style="width:${s.rate}%;background:${s.color||'var(--accent)'}"></div></div>
+        </div>
+      </div>`).join('');
+  }
+  filterReport();
+}
+
+function filterReport() {
+  if (!reportData) return;
+  const stdFilter    = document.getElementById('rpt-filter-std')?.value || '';
+  const statusFilter = document.getElementById('rpt-filter-status')?.value || '';
+  const q            = document.getElementById('rpt-search')?.value.toLowerCase() || '';
+
+  let rows = reportData.controls;
+  if (stdFilter)    rows = rows.filter(r => String(r.standard_id) === stdFilter);
+  if (statusFilter === 'done') rows = rows.filter(r => r.is_completed);
+  if (statusFilter === 'todo') rows = rows.filter(r => !r.is_completed);
+  if (q) rows = rows.filter(r => r.title?.toLowerCase().includes(q) || r.ref_no?.toLowerCase().includes(q) || r.category?.toLowerCase().includes(q));
+
+  const count = document.getElementById('rpt-count');
+  if (count) count.textContent = `${rows.length} kontrol`;
+
+  const tbody = document.getElementById('rpt-tbody');
+  if (!tbody) return;
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text2)">Sonuç yok</td></tr>`; return; }
+
+  const stdMap = {};
+  (reportData.standards||[]).forEach(s => { stdMap[s.id] = s; });
+
+  tbody.innerHTML = rows.map(r => {
+    const done = r.is_completed;
+    const std = stdMap[r.standard_id] || {};
+    return `<tr class="${done?'ctrl-row-done':''}">
+      <td style="text-align:center">${done?'✅':'⬜'}</td>
+      <td><span class="ref-badge">${escHtml(r.ref_no||'')}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${escHtml(std.icon||'')} ${escHtml(std.shortName||std.name||'')}</td>
+      <td class="ctrl-title">${escHtml(r.title||'')}</td>
+      <td style="font-size:12px;color:var(--text2)">${escHtml(r.category||'')}</td>
+      <td style="font-size:12px">${done?escHtml(r.completed_by||''):'<span style="color:var(--text3)">—</span>'}</td>
+      <td style="font-size:12px;color:var(--text2)">${done&&r.completed_at?String(r.completed_at).slice(0,10):'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportCompletionReport() {
+  toast('Excel indirme yakında eklenecek', 'info');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ── ALERTS PAGE ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadAlertsPage() {
+  const listEl = document.getElementById('alrt-list');
+  if (listEl) listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text2)"><div class="spinner" style="margin:0 auto 12px"></div>Yükleniyor…</div>`;
+  try {
+    const resp = await apiFetch('/api/regulation/alerts/upcoming');
+    if (!resp.ok) throw new Error('Uyarılar yüklenemedi');
+    alertsData = await resp.json();
+    renderAlertsPage();
+    updateAlertBadge(alertsData.summary);
+    // Update dashboard stat
+    const statEl = document.getElementById('stat-alerts');
+    if (statEl) statEl.textContent = alertsData.summary.total;
+  } catch(e) {
+    if (listEl) listEl.innerHTML = `<div style="color:var(--red);padding:20px">${e.message}</div>`;
+  }
+}
+
+function renderAlertsPage() {
+  if (!alertsData) return;
+  const { summary } = alertsData;
+  document.getElementById('alrt-overdue').textContent  = summary.overdue;
+  document.getElementById('alrt-critical').textContent = summary.critical;
+  document.getElementById('alrt-warning').textContent  = summary.warning;
+  document.getElementById('alrt-info').textContent     = alertsData.alerts.filter(a => a.urgency === 'info').length;
+  filterAlerts();
+}
+
+function filterAlerts() {
+  if (!alertsData) return;
+  const urgFilter = document.getElementById('alrt-filter')?.value || '';
+  const typeFilter = document.getElementById('alrt-filter-type')?.value || '';
+  let alerts = alertsData.alerts;
+  if (urgFilter)  alerts = alerts.filter(a => a.urgency === urgFilter);
+  if (typeFilter) alerts = alerts.filter(a => a.docType === typeFilter);
+
+  const listEl = document.getElementById('alrt-list');
+  if (!listEl) return;
+  if (!alerts.length) {
+    listEl.innerHTML = `<div class="empty-state" style="padding:40px"><div class="empty-icon">✅</div><h3>Yaklaşan Gözden Geçirme Yok</h3><p>90 gün içinde güncellenmesi gereken politika bulunmuyor.</p></div>`;
+    return;
+  }
+
+  const docTypeMeta = { policy:'📋', procedure:'📑', checklist:'✅', raci:'👥', revision:'🔄' };
+  const urgLabel = { overdue:'Gecikmiş', critical:'Kritik', warning:'Uyarı', info:'Bilgi' };
+  const pillCls  = { overdue:'pill-overdue', critical:'pill-critical', warning:'pill-warning', info:'pill-info' };
+
+  listEl.innerHTML = alerts.map(a => {
+    const daysText = a.daysUntil < 0
+      ? `${Math.abs(a.daysUntil)} gün gecikti`
+      : a.daysUntil === 0 ? 'Bugün!' : `${a.daysUntil} gün kaldı`;
+    return `<div class="alert-card ${a.urgency}" onclick="openPolicyModal('${escAttr(String(a.standardId))}','${escAttr(a.refNo)}','${escAttr(a.controlTitle||'')}','','')">
+      <div style="font-size:20px">${docTypeMeta[a.docType]||'📄'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px">${escHtml(a.controlTitle||a.refNo)}</div>
+        <div style="font-size:11px;color:var(--text2)">${escHtml(a.standardIcon||'')} ${escHtml(a.standardName)} · <span class="ref-badge">${escHtml(a.refNo)}</span> · ${escHtml(docTypeMeta[a.docType]||'')} ${escHtml(a.docType)}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <span class="alert-pill ${pillCls[a.urgency]}">${urgLabel[a.urgency]}</span>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">${escHtml(daysText)}</div>
+        <div style="font-size:11px;color:var(--text3)">${escHtml(String(a.nextReviewDate||'').slice(0,10))}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateAlertBadge(summary) {
+  const badge = document.getElementById('alert-topbar-badge');
+  if (!badge) return;
+  const urgent = (summary.overdue||0) + (summary.critical||0);
+  if (urgent > 0) {
+    badge.textContent = urgent;
+    badge.style.display = 'inline';
+  } else if (summary.warning > 0) {
+    badge.textContent = summary.warning;
+    badge.style.display = 'inline';
+    badge.style.background = 'var(--orange)';
+  } else {
+    badge.style.display = 'none';
+  }
+}
 async function downloadSinglePolicy() {
   if (!currentPolicyStdId || !currentPolicyRefNo) return;
   const btn = document.getElementById('policy-download-btn');

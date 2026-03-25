@@ -30,6 +30,7 @@ export interface JwtPayload {
   fullName: string;
   role: string;
   tenantId: number;
+  isSuperAdmin?: boolean;
   iat?: number;
   exp?: number;
 }
@@ -71,6 +72,8 @@ export interface ProcedureStep {
   title: string;
   description: string;
   responsible?: string;
+  duration?: string;
+  deadline?: string;
   inputs?: string[];
   outputs?: string[];
 }
