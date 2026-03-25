@@ -1315,7 +1315,7 @@ router.get('/controls/completion/:standardId', requireAuth, async (req: Request,
     const result = await pool.query(
       `SELECT ref_no, is_completed, completed_at, completed_by, notes
        FROM control_completions
-       WHERE tenant_id = $1 AND standard_id::varchar = $2`,
+       WHERE tenant_id = $1 AND standard_id = $2`,
       [tenantId, req.params.standardId]
     );
     const map: Record<string, any> = {};
@@ -1406,7 +1406,7 @@ router.get('/report/completion', requireAuth, async (req: Request, res: Response
               cc.is_completed, cc.completed_at, cc.completed_by
        FROM controls c
        LEFT JOIN control_completions cc ON cc.tenant_id = $1
-         AND cc.standard_id::varchar = c.standard_id
+         AND cc.standard_id = c.standard_id
          AND cc.ref_no = c.ref_no
        WHERE c.tenant_id = $1
        ORDER BY c.standard_id, c.ref_no`,
